@@ -1,9 +1,12 @@
+# nowarn "86" // Suppress warnings about redefining = and <> operators
+
 namespace Alloy
 
 /// Operator symbols
+[<AutoOpen>]
 module Operators =
     open Core
-    open Numeric
+    open Alloy.Numeric
     
     /// Pipe forward
     let (|>) x f = f x
@@ -18,19 +21,19 @@ module Operators =
     let (<<) g f x = g (f x)
     
     /// Addition
-    let (+) a b = add a b
+    let inline (+) (a: ^T) (b: ^T) : ^T when ^T : (static member Add: ^T * ^T -> ^T) = add a b
     
     /// Subtraction
-    let (-) a b = subtract a b
+    let inline (-) (a: ^T) (b: ^T) : ^T when ^T : (static member Subtract: ^T * ^T -> ^T) = subtract a b
     
     /// Multiplication
-    let (*) a b = multiply a b
+    let inline (*) (a: ^T) (b: ^T) : ^T when ^T : (static member Multiply: ^T * ^T -> ^T) = multiply a b
     
     /// Division
-    let (/) a b = divide a b
+    let inline (/) (a: ^T) (b: ^T) : ^T when ^T : (static member Divide: ^T * ^T -> ^T) = divide a b
     
     /// Equality
-    let (=) a b = equals a b
+    let inline (=) (a: ^T) (b: ^T) : bool when ^T : (static member Equals: ^T * ^T -> bool) = equals a b
     
     /// Inequality
-    let (<>) a b = not_equals a b
+    let inline (<>) (a: ^T) (b: ^T) : bool when ^T : (static member Equals: ^T * ^T -> bool) = not_equals a b

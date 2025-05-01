@@ -2,6 +2,9 @@ namespace Alloy
 
 /// String operations implemented without any external dependencies
 module String =
+   // Open the F# core operators to use built-in + and - for ints
+   open Microsoft.FSharp.Core.Operators
+   
    /// Length of a string
    let length (s: string) = s.Length
    

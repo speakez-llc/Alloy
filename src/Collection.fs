@@ -1,49 +1,54 @@
 namespace Alloy
 
 /// Collection operations
+[<AutoOpen>]
 module Collection =
     open Core
     
     /// Map operation for collection types
-    let map<'T, 'U, 'Collection> (f: 'T -> 'U) (collection: 'Collection) =
-        ((^Collection or ^T or ^U) : (static member Map : ('T -> 'U) * 'Collection -> 'U) (f, collection))
+    let inline map<'T, 'U, 'Collection when 'Collection: (static member Map: ('T -> 'U) * 'Collection -> 'Collection)> 
+        (f: 'T -> 'U) (collection: 'Collection) : 'Collection =
+        'Collection.Map(f, collection)
     
     /// Map with index
-    let mapi<'T, 'U, 'Collection> (f: int -> 'T -> 'U) (collection: 'Collection) =
-        ((^Collection or ^T or ^U) : (static member MapI : (int -> 'T -> 'U) * 'Collection -> 'U) (f, collection))
+    let inline mapi<'T, 'U, 'Collection when 'Collection: (static member MapI: (int -> 'T -> 'U) * 'Collection -> 'Collection)> 
+        (f: int -> 'T -> 'U) (collection: 'Collection) : 'Collection =
+        'Collection.MapI(f, collection)
     
     /// Iteration over collection
-    let iter<'T, 'Collection> (f: 'T -> unit) (collection: 'Collection) =
-        ((^Collection or ^T) : (static member Iter : ('T -> unit) * 'Collection -> unit) (f, collection))
+    let inline iter<'T, 'Collection when 'Collection: (static member Iter: ('T -> unit) * 'Collection -> unit)> 
+        (f: 'T -> unit) (collection: 'Collection) : unit =
+        'Collection.Iter(f, collection)
     
     /// Iteration with index
-    let iteri<'T, 'Collection> (f: int -> 'T -> unit) (collection: 'Collection) =
-        ((^Collection or ^T) : (static member IterI : (int -> 'T -> unit) * 'Collection -> unit) (f, collection))
+    let inline iteri<'T, 'Collection when 'Collection: (static member IterI: (int -> 'T -> unit) * 'Collection -> unit)> 
+        (f: int -> 'T -> unit) (collection: 'Collection) : unit =
+        'Collection.IterI(f, collection)
     
     /// Fold over collection
-    let fold<'T, 'State, 'Collection> (folder: 'State -> 'T -> 'State) (state: 'State) (collection: 'Collection) =
-        ((^Collection or ^T or ^State) : (static member Fold : ('State -> 'T -> 'State) * 'State * 'Collection -> 'State) 
-            (folder, state, collection))
+    let inline fold<'T, 'State, 'Collection when 'Collection: (static member Fold: ('State -> 'T -> 'State) * 'State * 'Collection -> 'State)> 
+        (folder: 'State -> 'T -> 'State) (state: 'State) (collection: 'Collection) : 'State =
+        'Collection.Fold(folder, state, collection)
     
     /// Filter collection elements
-    let filter<'T, 'Collection> (predicate: 'T -> bool) (collection: 'Collection) =
-        ((^Collection or ^T) : (static member Filter : ('T -> bool) * 'Collection -> 'Collection) 
-            (predicate, collection))
+    let inline filter<'T, 'Collection when 'Collection: (static member Filter: ('T -> bool) * 'Collection -> 'Collection)> 
+        (predicate: 'T -> bool) (collection: 'Collection) : 'Collection =
+        'Collection.Filter(predicate, collection)
     
     /// Choose elements with transformation
-    let choose<'T, 'U, 'Collection> (chooser: 'T -> 'U option) (collection: 'Collection) =
-        ((^Collection or ^T or ^U) : (static member Choose : ('T -> 'U option) * 'Collection -> 'Collection) 
-            (chooser, collection))
+    let inline choose<'T, 'U, 'Collection when 'Collection: (static member Choose: ('T -> 'U option) * 'Collection -> 'Collection)> 
+        (chooser: 'T -> 'U option) (collection: 'Collection) : 'Collection =
+        'Collection.Choose(chooser, collection)
     
     /// Find an element in a collection
-    let find<'T, 'Collection> (predicate: 'T -> bool) (collection: 'Collection) =
-        ((^Collection or ^T) : (static member Find : ('T -> bool) * 'Collection -> 'T) 
-            (predicate, collection))
+    let inline find<'T, 'Collection when 'Collection: (static member Find: ('T -> bool) * 'Collection -> 'T)> 
+        (predicate: 'T -> bool) (collection: 'Collection) : 'T =
+        'Collection.Find(predicate, collection)
     
     /// Try to find an element
-    let tryFind<'T, 'Collection> (predicate: 'T -> bool) (collection: 'Collection) =
-        ((^Collection or ^T) : (static member TryFind : ('T -> bool) * 'Collection -> 'T option) 
-            (predicate, collection))
+    let inline tryFind<'T, 'Collection when 'Collection: (static member TryFind: ('T -> bool) * 'Collection -> 'T option)> 
+        (predicate: 'T -> bool) (collection: 'Collection) : 'T option =
+        'Collection.TryFind(predicate, collection)
     
     /// Implementations for Array type
     type ArrayImpl =

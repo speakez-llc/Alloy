@@ -18,7 +18,7 @@ type ValueOption<'T> =
         | ValueNone -> failwith "No value"
     
     static member Some (x: 'T) = ValueSome x
-    static member None<'T> : ValueOption<'T> = ValueNone
+    static member None<'T>() : ValueOption<'T> = ValueNone // Changed to a method
     
     static member Map (f: 'T -> 'U, opt: ValueOption<'T>) =
         match opt with

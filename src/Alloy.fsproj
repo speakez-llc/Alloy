@@ -1,22 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-    <!-- This allows us to control FSharp.Core explicitly -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TrimMode>full</TrimMode>
+    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="Core.fs" />
+    <Compile Include="Numeric.fs" />
     <Compile Include="Operators.fs" />
     <Compile Include="Option.fs" />
     <Compile Include="Collection.fs" />
-    <Compile Include="Numeric.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="String.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="5.0.0" />
+    <PackageReference Include="FSharp.Core" Version="9.0.201" />
+    <PackageReference Include="fsil" Version="1.0.19" />
   </ItemGroup>
 </Project>
