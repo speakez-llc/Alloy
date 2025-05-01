@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="StringTests.fs" />
+    <Compile Include="NumericTests.fs" />
+    <Compile Include="CollectionTests.fs" />
+    <Compile Include="CoreTests.fs" />
+    <Compile Include="OperatorTests.fs" />
+    <Compile Include="OptionTests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="10.1.0" />
+    <PackageReference Include="FSharp.Core" Version="8.0.100" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.14.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Alloy.fsproj" />
+  </ItemGroup>
+
+</Project>
