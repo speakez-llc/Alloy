@@ -13,8 +13,8 @@ let stringTests =
         testCase "IsEmpty - matches System.String.IsNullOrEmpty" <| fun _ ->
             let emptyStr = ""
             let nonEmptyStr = "Hello"
-            Expect.equal (String.isEmpty emptyStr) (System.String.IsNullOrEmpty(emptyStr)) "Empty string check should match"
-            Expect.equal (String.isEmpty nonEmptyStr) (System.String.IsNullOrEmpty(nonEmptyStr)) "Non-empty string check should match"
+            Expect.equal (String.isEmpty emptyStr) (emptyStr.Length = 0) "Empty string check should match"
+            Expect.equal (String.isEmpty nonEmptyStr) (nonEmptyStr.Length = 0) "Non-empty string check should match"
         
         testCase "IsNullOrEmpty - matches System.String.IsNullOrEmpty" <| fun _ ->
             let nullStr: string = null

@@ -9,11 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Core.fs" />
-    <Compile Include="Numeric.fs" />
+    <Compile Include="Main.fs" />
+    <Compile Include="ValueOption.fs" />
     <Compile Include="Operators.fs" />
-    <Compile Include="Option.fs" />
-    <Compile Include="Collection.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="String.fs" />
   </ItemGroup>

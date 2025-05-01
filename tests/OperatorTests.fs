@@ -2,9 +2,6 @@ module Alloy.Tests.OperatorTests
 
 open Expecto
 open Alloy
-open Alloy.Numeric
-open Alloy.Core
-open Alloy.Operators
 
 /// Tests for operator overloads
 let operatorTests =

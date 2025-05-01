@@ -8,9 +8,7 @@
 
   <ItemGroup>
     <Compile Include="StringTests.fs" />
-    <Compile Include="NumericTests.fs" />
-    <Compile Include="CollectionTests.fs" />
-    <Compile Include="CoreTests.fs" />
+    <Compile Include="MainTests.fs" />
     <Compile Include="OperatorTests.fs" />
     <Compile Include="OptionTests.fs" />
     <Compile Include="Program.fs" />
