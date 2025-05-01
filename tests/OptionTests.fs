@@ -14,7 +14,6 @@ let optionTests =
             
             Expect.equal someOpt.IsSome someValOpt.IsSome "IsSome should match for Some values"
             Expect.equal noneOpt.IsSome noneValOpt.IsSome "IsSome should match for None values"
-        ]
         
         testCase "ValueOption.Value - matches Option.Value" <| fun _ ->
             let someOpt = Some 42
@@ -31,7 +30,6 @@ let optionTests =
             Expect.throws (fun () -> 
                 ValueOption<int>.None().Value |> ignore
             ) "ValueOption.None.Value should throw"
-        ]
         
         testCase "ValueOption.Map - matches Option.map" <| fun _ ->
             let someOpt = Some 42
@@ -51,7 +49,6 @@ let optionTests =
             let mappedNoneValOpt = ValueOption<int>.Map(f, noneValOpt)
             
             Expect.equal mappedNoneOpt.IsSome mappedNoneValOpt.IsSome "IsSome should match after mapping None"
-        ]
         
         testCase "ValueOption.Bind - matches Option.bind" <| fun _ ->
             let someOpt = Some 42
@@ -73,7 +70,6 @@ let optionTests =
             let boundNoneValOpt = ValueOption<int>.Bind(fVal, noneValOpt)
             
             Expect.equal boundNoneOpt.IsSome boundNoneValOpt.IsSome "IsSome should match after binding None"
-        ]
         
         testCase "ValueOption.OfOption - converts Option to ValueOption" <| fun _ ->
             let someOpt = Some 42
@@ -87,7 +83,6 @@ let optionTests =
                 Expect.equal someOpt.Value someValOpt.Value "Value should match after conversion of Some"
             
             Expect.equal noneOpt.IsSome noneValOpt.IsSome "IsSome should match after conversion of None"
-        ]
         
         testCase "ValueOption.ToOption - converts ValueOption to Option" <| fun _ ->
             let someValOpt = ValueOption<int>.Some 42
@@ -101,12 +96,11 @@ let optionTests =
                 Expect.equal someValOpt.Value someOpt.Value "Value should match after conversion of Some"
             
             Expect.equal noneValOpt.IsSome noneOpt.IsSome "IsSome should match after conversion of None"
-        ]
         
         testCase "ValueOption is a struct (zero allocation)" <| fun _ ->
             // Verify that ValueOption is a struct type (zero allocation)
             Expect.isTrue (typeof<ValueOption<int>>.IsValueType) "ValueOption should be a value type"
-        ]
+        
     ]
 
 // Add tests to the test group

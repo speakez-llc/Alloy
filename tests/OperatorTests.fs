@@ -28,7 +28,6 @@ let operatorTests =
             // Test <<
             let h2 = g << f
             Expect.equal (h2 x) (g (f x)) "Backward composition should apply functions in order"
-        ]
         
         testCase "Arithmetic Operators - Int" <| fun _ ->
             let a, b = 5, 3
@@ -48,7 +47,6 @@ let operatorTests =
             // Test /
             Expect.equal (a / b) (divide a b) "Custom / should match divide function"
             Expect.equal (a / b) (a / b) "Custom / should match system /"
-        ]
         
         testCase "Arithmetic Operators - Float" <| fun _ ->
             let a, b = 5.5, 3.3
@@ -68,7 +66,6 @@ let operatorTests =
             // Test /
             Expect.equal (a / b) (divide a b) "Custom / should match divide function"
             Expect.equal (a / b) (a / b) "Custom / should match system /"
-        ]
         
         testCase "Comparison Operators" <| fun _ ->
             let i1, i2, i3 = 5, 5, 10
@@ -98,7 +95,7 @@ let operatorTests =
             // Test <> for strings
             Expect.equal (s1 <> s2) (not_equals s1 s2) "Custom <> should match not_equals function"
             Expect.equal (s1 <> s3) (not_equals s1 s3) "Custom <> should match not_equals function"
-        ]
+        
     ]
 
 // Add tests to the test group

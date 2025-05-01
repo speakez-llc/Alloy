@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="10.1.0" />
-    <PackageReference Include="FSharp.Core" Version="8.0.100" />
+    <PackageReference Include="FSharp.Core" Version="9.0.201" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.14.2" />
   </ItemGroup>

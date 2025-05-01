@@ -51,14 +51,51 @@ module Collection =
         'Collection.TryFind(predicate, collection)
     
     /// Implementations for Array type
-    type ArrayImpl =
-        static member Map (f: 'T -> 'U, xs: 'T[]) = Array.map f xs
-        static member MapI (f: int -> 'T -> 'U, xs: 'T[]) = Array.mapi f xs
-        static member Iter (f: 'T -> unit, xs: 'T[]) = Array.iter f xs
-        static member IterI (f: int -> 'T -> unit, xs: 'T[]) = Array.iteri f xs
-        static member Fold (folder: 'State -> 'T -> 'State, state: 'State, xs: 'T[]) = 
-            Array.fold folder state xs
-        static member Filter (predicate: 'T -> bool, xs: 'T[]) = Array.filter predicate xs
-        static member Choose (chooser: 'T -> 'U option, xs: 'T[]) = Array.choose chooser xs
-        static member Find (predicate: 'T -> bool, xs: 'T[]) = Array.find predicate xs
-        static member TryFind (predicate: 'T -> bool, xs: 'T[]) = Array.tryFind predicate xs
+    [<AutoOpen>]
+    module CollectionImplementations =
+        type ArrayImpl =
+            static member Map (f: 'T -> 'U, xs: 'T[]) = Array.map f xs
+            static member MapI (f: int -> 'T -> 'U, xs: 'T[]) = Array.mapi f xs
+            static member Iter (f: 'T -> unit, xs: 'T[]) = Array.iter f xs
+            static member IterI (f: int -> 'T -> unit, xs: 'T[]) = Array.iteri f xs
+            static member Fold (folder: 'State -> 'T -> 'State, state: 'State, xs: 'T[]) = 
+                Array.fold folder state xs
+            static member Filter (predicate: 'T -> bool, xs: 'T[]) = Array.filter predicate xs
+            static member Choose (chooser: 'T -> 'U option, xs: 'T[]) = Array.choose chooser xs
+            static member Find (predicate: 'T -> bool, xs: 'T[]) = Array.find predicate xs
+            static member TryFind (predicate: 'T -> bool, xs: 'T[]) = Array.tryFind predicate xs
+        
+        // Extensions for array types must be in a module
+        module Extensions = 
+            type System.Array with
+                static member Map (f: 'T -> 'U, xs: 'T[]) = ArrayImpl.Map (f, xs)
+                static member MapI (f: int -> 'T -> 'U, xs: 'T[]) = ArrayImpl.MapI (f, xs)
+                static member Iter (f: 'T -> unit, xs: 'T[]) = ArrayImpl.Iter (f, xs)
+                static member IterI (f: int -> 'T -> unit, xs: 'T[]) = ArrayImpl.IterI (f, xs)
+                static member Fold (folder: 'State -> 'T -> 'State, state: 'State, xs: 'T[]) = 
+                    ArrayImpl.Fold (folder, state, xs)
+                static member Filter (predicate: 'T -> bool, xs: 'T[]) = ArrayImpl.Filter (predicate, xs)
+                static member Choose (chooser: 'T -> 'U option, xs: 'T[]) = ArrayImpl.Choose (chooser, xs)
+                static member Find (predicate: 'T -> bool, xs: 'T[]) = ArrayImpl.Find (predicate, xs)
+                static member TryFind (predicate: 'T -> bool, xs: 'T[]) = ArrayImpl.TryFind (predicate, xs)
+            
+            // Option extensions for collection operations
+            type Microsoft.FSharp.Core.Option<'T> with
+                static member Map(f: 'T -> 'U, opt: 'T option) = Option.map f opt
+                static member MapI(f: int -> 'T -> 'U, opt: 'T option) =
+                    match opt with
+                    | Some x -> Some (f 0 x)
+                    | None -> None
+                static member Iter(f: 'T -> unit, opt: 'T option) = Option.iter f opt
+                static member IterI(f: int -> 'T -> unit, opt: 'T option) =
+                    match opt with
+                    | Some x -> f 0 x
+                    | None -> ()
+                static member Find(predicate: 'T -> bool, opt: 'T option) = 
+                    match opt with
+                    | Some x when predicate x -> x
+                    | _ -> failwith "No matching element found"
+                static member TryFind(predicate: 'T -> bool, opt: 'T option) =
+                    match opt with
+                    | Some x when predicate x -> Some x
+                    | _ -> None
