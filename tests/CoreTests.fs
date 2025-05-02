@@ -5,7 +5,6 @@ open Alloy
 open Alloy.Core
 open Alloy.Tests.TestHelpers
 
-/// Tests for Core module functionality
 let coreTests =
     testList "Core" [
         testList "Collection Operations" [
@@ -208,6 +207,6 @@ let coreTests =
         ]
     ]
 
-// Register the tests
+
 [<Tests>]
 let tests = coreTests

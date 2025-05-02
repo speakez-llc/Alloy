@@ -276,6 +276,6 @@ let spanTests =
         ]
     ]
 
-// Register the tests
+
 [<Tests>]
 let tests = spanTests

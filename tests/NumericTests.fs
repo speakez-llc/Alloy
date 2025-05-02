@@ -7,7 +7,7 @@ open Alloy.Numerics
 open Alloy.Operators
 open Alloy.Tests.TestHelpers
 
-/// Tests for Numeric module functionality and operators
+
 let numericTests =
     testList "Numeric" [
         testList "Primitive Operations" [
@@ -199,6 +199,5 @@ let numericTests =
         ]
     ]
 
-// Register the tests
 [<Tests>]
 let tests = numericTests

@@ -7,7 +7,6 @@ open Alloy.Numerics
 open Alloy.Operators
 open Alloy.Tests.TestHelpers
 
-/// Tests for the Operators module
 let operatorTests =
     testList "Operators" [
         testList "Function Composition" [
