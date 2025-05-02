@@ -2,15 +2,22 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="StringTests.fs" />
-    <Compile Include="MainTests.fs" />
+    <Compile Include="TestHelpers.fs" />
+    <Compile Include="BasicTests.fs" />
+    <!--
+    <Compile Include="CoreTests.fs" />
+    <Compile Include="NumericTests.fs" />
     <Compile Include="OperatorTests.fs" />
-    <Compile Include="OptionTests.fs" />
+    <Compile Include="ResultTests.fs" />
+    <Compile Include="SpanTests.fs" />
+    <Compile Include="StringTests.fs" />
+    <Compile Include="ValueOptionTests.fs" />
+    -->
     <Compile Include="Program.fs" />
   </ItemGroup>
 
