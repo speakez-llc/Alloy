@@ -1,265 +1,164 @@
+/// String operations for the Alloy library
 namespace Alloy
 
-/// String operations implemented without any external dependencies
+/// Module containing optimized string operations
+/// These functions provide safe and efficient string manipulation
 module String =
-   // Open the F# core operators to use built-in + and - for ints
-   open Microsoft.FSharp.Core.Operators
-   
-   /// Length of a string
-   let length (s: string) = s.Length
-   
-   /// Check if string is empty
-   let isEmpty (s: string) = s.Length = 0
-   
-   /// Check if string is null or empty
-   let isNullOrEmpty (s: string) = 
-       match s with
-       | null -> true
-       | s -> s.Length = 0
-   
-   /// Check if string contains only whitespace
-   let isWhiteSpace (s: string) =
-       let mutable i = 0
-       let mutable result = true
-       
-       while i < s.Length && result do
-           let c = s.[i]
-           if c <> ' ' && c <> '\t' && c <> '\n' && c <> '\r' then
-               result <- false
-           i <- i + 1
-       
-       result
-   
-   /// Check if string is null or whitespace
-   let isNullOrWhiteSpace (s: string) =
-       match s with
-       | null -> true
-       | s -> isWhiteSpace s
-   
-   /// Get substring
-   let substring (startIndex: int) (length: int) (s: string) =
-       s.Substring(startIndex, length)
-   
-   /// Get substring from start to end
-   let substringFrom (startIndex: int) (s: string) =
-       s.Substring(startIndex)
-   
-   /// Split string by delimiter
-   let split (separator: char) (s: string) =
-       let result = ResizeArray<string>()
-       let mutable startIndex = 0
-       
-       for i = 0 to s.Length - 1 do
-           if s.[i] = separator then
-               let segment = s.Substring(startIndex, i - startIndex)
-               result.Add(segment)
-               startIndex <- i + 1
-               
-       // Add final segment
-       if startIndex <= s.Length then
-           result.Add(s.Substring(startIndex))
-           
-       result.ToArray()
-   
-   /// Split string by multiple delimiters
-   let splitMany (separators: char[]) (s: string) =
-       let result = ResizeArray<string>()
-       let mutable startIndex = 0
-       
-       for i = 0 to s.Length - 1 do
-           let mutable isSeparator = false
-           for sep in separators do
-               if s.[i] = sep then
-                   isSeparator <- true
-           
-           if isSeparator then
-               let segment = s.Substring(startIndex, i - startIndex)
-               result.Add(segment)
-               startIndex <- i + 1
-               
-       // Add final segment
-       if startIndex <= s.Length then
-           result.Add(s.Substring(startIndex))
-           
-       result.ToArray()
-   
-   /// Join strings with separator
-   let join (separator: string) (strings: string[]) =
-       if strings.Length = 0 then ""
-       else
-           let sb = strings |> Array.fold 
-                       (fun (sb: ResizeArray<char>) s -> 
-                           if sb.Count > 0 then
-                               // Add separator
-                               for c in separator do
-                                   sb.Add(c)
-                           // Add string
-                           for c in s do
-                               sb.Add(c)
-                           sb) 
-                       (ResizeArray<char>())
-           new string(sb.ToArray())
-   
-   /// Trim whitespace from start and end
-   let trim (s: string) =
-       let mutable startIndex = 0
-       while startIndex < s.Length && 
-             (s.[startIndex] = ' ' || 
-              s.[startIndex] = '\t' || 
-              s.[startIndex] = '\n' || 
-              s.[startIndex] = '\r') do
-           startIndex <- startIndex + 1
-       
-       let mutable endIndex = s.Length - 1
-       while endIndex >= 0 && 
-             (s.[endIndex] = ' ' || 
-              s.[endIndex] = '\t' || 
-              s.[endIndex] = '\n' || 
-              s.[endIndex] = '\r') do
-           endIndex <- endIndex - 1
-       
-       if startIndex > endIndex then ""
-       else s.Substring(startIndex, endIndex - startIndex + 1)
-   
-   /// Trim whitespace from start
-   let trimStart (s: string) =
-       let mutable startIndex = 0
-       while startIndex < s.Length && 
-             (s.[startIndex] = ' ' || 
-              s.[startIndex] = '\t' || 
-              s.[startIndex] = '\n' || 
-              s.[startIndex] = '\r') do
-           startIndex <- startIndex + 1
-       
-       if startIndex = 0 then s
-       elif startIndex >= s.Length then ""
-       else s.Substring(startIndex)
-   
-   /// Trim whitespace from end
-   let trimEnd (s: string) =
-       let mutable endIndex = s.Length - 1
-       while endIndex >= 0 && 
-             (s.[endIndex] = ' ' || 
-              s.[endIndex] = '\t' || 
-              s.[endIndex] = '\n' || 
-              s.[endIndex] = '\r') do
-           endIndex <- endIndex - 1
-       
-       if endIndex < 0 then ""
-       elif endIndex = s.Length - 1 then s
-       else s.Substring(0, endIndex + 1)
-   
-   /// Replace substring
-   let replace (oldValue: string) (newValue: string) (s: string) =
-       let mutable result = ResizeArray<char>()
-       let mutable i = 0
-       
-       while i < s.Length do
-           if i <= s.Length - oldValue.Length && 
-              s.Substring(i, oldValue.Length) = oldValue then
-               // Add replacement
-               for c in newValue do
-                   result.Add(c)
-               i <- i + oldValue.Length
-           else
-               // Add current character
-               result.Add(s.[i])
-               i <- i + 1
-               
-       new string(result.ToArray())
-   
-   /// Check if string starts with prefix
-   let startsWith (prefix: string) (s: string) =
-       if s.Length < prefix.Length then false
-       else
-           let mutable result = true
-           let mutable i = 0
-           
-           while i < prefix.Length && result do
-               if s.[i] <> prefix.[i] then
-                   result <- false
-               i <- i + 1
-               
-           result
-   
-   /// Check if string ends with suffix
-   let endsWith (suffix: string) (s: string) =
-       if s.Length < suffix.Length then false
-       else
-           let mutable result = true
-           let mutable i = 0
-           
-           while i < suffix.Length && result do
-               if s.[s.Length - suffix.Length + i] <> suffix.[i] then
-                   result <- false
-               i <- i + 1
-               
-           result
-   
-   /// Convert string to lowercase
-   let toLower (s: string) =
-       let chars = Array.zeroCreate s.Length
-       for i = 0 to s.Length - 1 do
-           let c = s.[i]
-           if c >= 'A' && c <= 'Z' then
-               chars.[i] <- char (int c + 32)
-           else
-               chars.[i] <- c
-       new string(chars)
-   
-   /// Convert string to uppercase
-   let toUpper (s: string) =
-       let chars = Array.zeroCreate s.Length
-       for i = 0 to s.Length - 1 do
-           let c = s.[i]
-           if c >= 'a' && c <= 'z' then
-               chars.[i] <- char (int c - 32)
-           else
-               chars.[i] <- c
-       new string(chars)
-   
-   /// Find index of substring
-   let indexOf (substring: string) (s: string) =
-       let mutable index = -1
-       let mutable i = 0
-       
-       while i <= s.Length - substring.Length && index = -1 do
-           let mutable matches = true
-           let mutable j = 0
-           
-           while j < substring.Length && matches do
-               if s.[i + j] <> substring.[j] then
-                   matches <- false
-               j <- j + 1
-               
-           if matches then
-               index <- i
-               
-           i <- i + 1
-           
-       index
-   
-   /// Find last index of substring
-   let lastIndexOf (substring: string) (s: string) =
-       let mutable index = -1
-       let mutable i = s.Length - substring.Length
-       
-       while i >= 0 && index = -1 do
-           let mutable matches = true
-           let mutable j = 0
-           
-           while j < substring.Length && matches do
-               if s.[i + j] <> substring.[j] then
-                   matches <- false
-               j <- j + 1
-               
-           if matches then
-               index <- i
-               
-           i <- i - 1
-           
-       index
-   
-   /// Check if string contains substring
-   let contains (substring: string) (s: string) =
-       indexOf substring s <> -1
+    /// Returns the length of a string
+    let inline length (s: string) : int =
+        if isNull s then 0 else s.Length
+    
+    /// Checks if a string is empty
+    let inline isEmpty (s: string) : bool =
+        isNull s || s.Length = 0
+    
+    /// Checks if a string is null or empty
+    let inline isNullOrEmpty (s: string) : bool =
+        System.String.IsNullOrEmpty(s)
+    
+    /// Checks if a string is null, empty, or consists only of white-space characters
+    let inline isNullOrWhiteSpace (s: string) : bool =
+        System.String.IsNullOrWhiteSpace(s)
+    
+    /// Gets a substring from a string
+    let inline substring (startIndex: int) (length: int) (s: string) : string =
+        if isNull s then ""
+        elif startIndex < 0 || startIndex >= s.Length then ""
+        else
+            let safeLength = min length (s.Length - startIndex)
+            if safeLength <= 0 then ""
+            else s.Substring(startIndex, safeLength)
+    
+    /// Gets a substring from a string to the end
+    let inline substringFrom (startIndex: int) (s: string) : string =
+        if isNull s then ""
+        elif startIndex < 0 || startIndex >= s.Length then ""
+        else s.Substring(startIndex)
+    
+    /// Determines whether a string contains the specified substring
+    let inline contains (value: string) (s: string) : bool =
+        if isNull s then false
+        elif isNull value then false
+        else s.Contains(value)
+    
+    /// Splits a string using the specified separator
+    let inline split (separator: char) (s: string) : string[] =
+        if isNull s then [||]
+        else s.Split([|separator|])
+    
+    /// Splits a string using multiple separators
+    let inline splitMany (separators: char[]) (s: string) : string[] =
+        if isNull s then [||]
+        else s.Split(separators)
+    
+    /// Joins multiple strings using the specified separator
+    let inline join (separator: string) (values: string[]) : string =
+        if isNull values || values.Length = 0 then ""
+        else System.String.Join(separator, values)
+    
+    /// Removes all leading and trailing white-space characters
+    let inline trim (s: string) : string =
+        if isNull s then ""
+        else s.Trim()
+    
+    /// Removes all leading white-space characters
+    let inline trimStart (s: string) : string =
+        if isNull s then ""
+        else s.TrimStart()
+    
+    /// Removes all trailing white-space characters
+    let inline trimEnd (s: string) : string =
+        if isNull s then ""
+        else s.TrimEnd()
+    
+    /// Replaces all occurrences of a specified string with another specified string
+    let inline replace (oldValue: string) (newValue: string) (s: string) : string =
+        if isNull s then ""
+        elif isNull oldValue then s
+        else s.Replace(oldValue, newValue)
+    
+    /// Determines whether a string starts with the specified prefix
+    let inline startsWith (prefix: string) (s: string) : bool =
+        if isNull s then false
+        elif isNull prefix then false
+        else s.StartsWith(prefix)
+    
+    /// Determines whether a string ends with the specified suffix
+    let inline endsWith (suffix: string) (s: string) : bool =
+        if isNull s then false
+        elif isNull suffix then false
+        else s.EndsWith(suffix)
+    
+    /// Converts a string to lowercase
+    let inline toLower (s: string) : string =
+        if isNull s then ""
+        else s.ToLower()
+    
+    /// Converts a string to uppercase
+    let inline toUpper (s: string) : string =
+        if isNull s then ""
+        else s.ToUpper()
+    
+    /// Returns the index of the first occurrence of the specified substring
+    let inline indexOf (value: string) (s: string) : int =
+        if isNull s then -1
+        elif isNull value then -1
+        else s.IndexOf(value)
+    
+    /// Returns the index of the last occurrence of the specified substring
+    let inline lastIndexOf (value: string) (s: string) : int =
+        if isNull s then -1
+        elif isNull value then -1
+        else s.LastIndexOf(value)
+    
+    /// Returns the index of the first occurrence of any character in the specified array
+    let inline indexOfAny (anyOf: char[]) (s: string) : int =
+        if isNull s then -1
+        elif isNull anyOf then -1
+        else s.IndexOfAny(anyOf)
+    
+    /// Converts a string to a char array
+    let inline toCharArray (s: string) : char[] =
+        if isNull s then [||]
+        else s.ToCharArray()
+    
+    /// Checks if a string is equal to another string, ignoring case
+    let inline equalsIgnoreCase (value: string) (s: string) : bool =
+        if isNull s then isNull value
+        elif isNull value then false
+        else s.Equals(value, System.StringComparison.OrdinalIgnoreCase)
+    
+    /// Gets a value indicating whether the string is a valid integer
+    let inline isInteger (s: string) : bool =
+        if isNull s || s.Length = 0 then false
+        else
+            let mutable result = 0
+            System.Int32.TryParse(s, &result)
+    
+    /// Gets a value indicating whether the string is a valid number
+    let inline isNumber (s: string) : bool =
+        if isNull s || s.Length = 0 then false
+        else
+            let mutable result = 0.0
+            System.Double.TryParse(s, &result)
+    
+    /// Concatenates two strings, ensuring neither is null
+    let inline concat (s1: string) (s2: string) : string =
+        let s1Safe = if isNull s1 then "" else s1
+        let s2Safe = if isNull s2 then "" else s2
+        s1Safe + s2Safe
+    
+    /// Safely gets the character at the specified position
+    let inline charAt (index: int) (s: string) : ValueOption<char> =
+        if isNull s || index < 0 || index >= s.Length then ValueNone
+        else ValueSome s.[index]
+    
+    /// Checks if a string consists only of digits
+    let inline isDigitsOnly (s: string) : bool =
+        if isNull s || s.Length = 0 then false
+        else
+            let rec check i =
+                if i >= s.Length then true
+                elif s.[i] < '0' || s.[i] > '9' then false
+                else check (i + 1)
+            check 0

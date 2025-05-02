@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -9,15 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Main.fs" />
-    <Compile Include="ValueOption.fs" />
+    <Compile Include="Core.fs" />
+    <Compile Include="Numeric.fs" />
+    <Compile Include="Span.fs" />
     <Compile Include="Operators.fs" />
+    <Compile Include="ValueOption.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="String.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="9.0.201" />
+    <PackageReference Include="FSharp.Core" Version="8.0.100" />
     <PackageReference Include="fsil" Version="1.0.19" />
   </ItemGroup>
 </Project>
