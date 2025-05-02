@@ -6,7 +6,7 @@ module Alloy.Operators
 
 // Import core functionality
 open Alloy.Core
-open Alloy.Numeric
+open Alloy.Numerics
 
 // --------------------------------------------------
 // Function composition operators

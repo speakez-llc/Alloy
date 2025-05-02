@@ -133,3 +133,11 @@ let inline equals (a: 'T) (b: 'T) : bool =
 /// Generic inequality check
 let inline not_equals (a: 'T) (b: 'T) : bool = 
     not (equals a b)
+
+/// Gets the minimum of two values using SRTP
+let inline min<'T when ^T : (static member Min : ^T * ^T -> ^T)> (a: 'T) (b: 'T) : 'T = 
+    ((^T) : (static member Min : ^T * ^T -> ^T) (a, b))
+
+/// Gets the maximum of two values using SRTP  
+let inline max<'T when ^T : (static member Max : ^T * ^T -> ^T)> (a: 'T) (b: 'T) : 'T =
+    ((^T) : (static member Max : ^T * ^T -> ^T) (a, b))

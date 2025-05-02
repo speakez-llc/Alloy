@@ -1,5 +1,4 @@
-/// Numeric operations for the Alloy library
-module Alloy.Numeric
+module Alloy.Numerics
 
 open Alloy.Core
 
@@ -18,9 +17,7 @@ module Internal =
         static member inline Add(a: float32, b: float32) = a + b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Add) : (static member Add: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
+            ((^T or Add) : (static member Add: ^T * ^T -> ^T) (a, b))
     
     [<AbstractClass; Sealed>]
     type Subtract =
@@ -31,9 +28,7 @@ module Internal =
         static member inline Subtract(a: float32, b: float32) = a - b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Subtract) : (static member Subtract: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
+            ((^T or Subtract) : (static member Subtract: ^T * ^T -> ^T) (a, b))
     
     [<AbstractClass; Sealed>]
     type Multiply =
@@ -44,9 +39,7 @@ module Internal =
         static member inline Multiply(a: float32, b: float32) = a * b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Multiply) : (static member Multiply: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
+            ((^T or Multiply) : (static member Multiply: ^T * ^T -> ^T) (a, b))
     
     [<AbstractClass; Sealed>]
     type Divide =
@@ -57,35 +50,7 @@ module Internal =
         static member inline Divide(a: float32, b: float32) = a / b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Divide) : (static member Divide: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
-    
-    [<AbstractClass; Sealed>]
-    type Min =
-        static member inline Min(a: int, b: int) = if a < b then a else b
-        static member inline Min(a: float, b: float) = if a < b then a else b
-        static member inline Min(a: int64, b: int64) = if a < b then a else b
-        static member inline Min(a: uint64, b: uint64) = if a < b then a else b
-        static member inline Min(a: float32, b: float32) = if a < b then a else b
-        
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Min) : (static member Min: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
-    
-    [<AbstractClass; Sealed>]
-    type Max =
-        static member inline Max(a: int, b: int) = if a > b then a else b
-        static member inline Max(a: float, b: float) = if a > b then a else b
-        static member inline Max(a: int64, b: int64) = if a > b then a else b
-        static member inline Max(a: uint64, b: uint64) = if a > b then a else b
-        static member inline Max(a: float32, b: float32) = if a > b then a else b
-        
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            let inline call_2 (a: ^T, b: ^T) =
-                ((^T or Max) : (static member Max: ^T * ^T -> ^T) (a, b))
-            call_2(a, b)
+            ((^T or Divide) : (static member Divide: ^T * ^T -> ^T) (a, b))
     
     [<AbstractClass; Sealed>]
     type Sum =
@@ -110,9 +75,7 @@ module Internal =
             sum
         
         static member inline Invoke (collection: ^Collection) : ^T =
-            let inline call_1 (collection: ^Collection) =
-                ((^Collection or Sum) : (static member Sum: ^Collection -> ^T) collection)
-            call_1(collection)
+            ((^Collection or Sum) : (static member Sum: ^Collection -> ^T) collection)
     
     [<AbstractClass; Sealed>]
     type Average =
@@ -145,9 +108,7 @@ module Internal =
                 sum / float32 xs.Length
         
         static member inline Invoke (collection: ^Collection) : ^T =
-            let inline call_1 (collection: ^Collection) =
-                ((^Collection or Average) : (static member Average: ^Collection -> ^T) collection)
-            call_1(collection)
+            ((^Collection or Average) : (static member Average: ^Collection -> ^T) collection)
 
 // --------------------------------------------------
 // Public API
@@ -164,12 +125,6 @@ let inline multiply a b = Internal.Multiply.Invoke a b
 
 /// Divide a by b
 let inline divide a b = Internal.Divide.Invoke a b
-
-/// Return the minimum of two values (renamed to avoid conflicts with F# built-in min)
-let inline staticMin a b = Internal.Min.Invoke a b
-
-/// Return the maximum of two values (renamed to avoid conflicts with F# built-in max)
-let inline staticMax a b = Internal.Max.Invoke a b
 
 /// Sum all elements in a collection
 let inline sum collection = Internal.Sum.Invoke collection

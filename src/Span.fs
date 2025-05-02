@@ -2,7 +2,7 @@ module Alloy.Span
 
 open System
 open Alloy.Core
-open Alloy.Numeric
+open Alloy.Numerics
 
 // --------------------------------------------------
 // Span creation functions
@@ -72,27 +72,27 @@ let inline foldSpan (folder: 'State -> 'T -> 'State) (state: 'State) (span: Read
     result
 
 /// Sums all elements in a Span
-let inline sumSpan<'T when 'T: (static member Zero: 'T) and (^T or Alloy.Numeric.Internal.Add): (static member Add: ^T * ^T -> ^T)> 
+let inline sumSpan<'T when 'T: (static member Zero: 'T) and (^T or Alloy.Numerics.Internal.Add): (static member Add: ^T * ^T -> ^T)> 
     (span: ReadOnlySpan<'T>) : 'T =
     if span.Length = 0 then 
         zero<'T>
     else
         let mutable result = span.[0]
         for i = 1 to span.Length - 1 do
-            result <- Numeric.add result span.[i]
+            result <- Numerics.add result span.[i]
         result
 
 /// Computes the average of elements in a Span
 let inline averageSpan<'T when 'T: (static member Zero: 'T) 
-                        and (^T or Alloy.Numeric.Internal.Add): (static member Add: ^T * ^T -> ^T)
-                        and (^T or Alloy.Numeric.Internal.Divide): (static member Divide: ^T * ^T -> ^T)> 
+                        and (^T or Alloy.Numerics.Internal.Add): (static member Add: ^T * ^T -> ^T)
+                        and (^T or Alloy.Numerics.Internal.Divide): (static member Divide: ^T * ^T -> ^T)> 
     (span: ReadOnlySpan<'T>) : 'T =
     if span.Length = 0 then 
         zero<'T>
     else
         let mutable sum = span.[0]
         for i = 1 to span.Length - 1 do
-            sum <- Numeric.add sum span.[i]
+            sum <- Numerics.add sum span.[i]
             
         // For numeric primitives - direct handling
         match box sum with
@@ -114,4 +114,4 @@ let inline averageSpan<'T when 'T: (static member Zero: 'T)
                     // This is a fallback and may not work for all types
                     box span.Length :?> 'T
                     
-            Numeric.divide sum divisor
+            Numerics.divide sum divisor

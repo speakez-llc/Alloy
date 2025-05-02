@@ -3,7 +3,7 @@ module Alloy.Tests.NumericTests
 open Expecto
 open Alloy
 open Alloy.Core
-open Alloy.Numeric
+open Alloy.Numerics
 open Alloy.Operators
 open Alloy.Tests.TestHelpers
 
@@ -32,11 +32,22 @@ let numericTests =
                 Expect.equal (divide 15.0 3.0) 5.0 "divide should work for floats"
                 Expect.equal (divide 15L 3L) 5L "divide should work for int64"
                 
-            testCase "min/max work on different numeric types" <| fun _ ->
-                Expect.equal (staticMin 10 20) 10 "min should return smaller integer"
-                Expect.equal (staticMin 10.5 20.5) 10.5 "min should return smaller float"
-                Expect.equal (staticMax 10 20) 20 "max should return larger integer"
-                Expect.equal (staticMax 10.5 20.5) 20.5 "max should return larger float"
+            testCase "min and max work on different numeric types" <| fun _ ->
+                // Use Core's min and max
+                let int1, int2 = 10, 20
+                let float1, float2 = 10.5, 20.5
+                
+                let intMin = min int1 int2
+                Expect.equal intMin 10 "min should return smaller integer"
+                
+                let floatMin = min float1 float2
+                Expect.equal floatMin 10.5 "min should return smaller float"
+                
+                let intMax = max int1 int2
+                Expect.equal intMax 20 "max should return larger integer"
+                
+                let floatMax = max float1 float2
+                Expect.equal floatMax 20.5 "max should return larger float"
                 
             testCase "sum works on different numeric arrays" <| fun _ ->
                 Expect.equal (sum [|1; 2; 3; 4; 5|]) 15 "sum should add all integers"
@@ -110,20 +121,20 @@ let numericTests =
                 Expect.equal divResult.X 2.5 "Division operator should divide X components"
                 Expect.equal divResult.Y (7.0/3.0) "Division operator should divide Y components"
             
-            testCase "Works with Person custom type" <| fun _ ->
+            testCase "Works with TestPerson custom type" <| fun _ ->
                 let p1 = { Name = "John"; Age = 25; IsActive = true }
                 let p2 = { Name = "Doe"; Age = 30; IsActive = false }
                 
                 let combined = add p1 p2
-                Expect.equal combined.Name "JohnDoe" "Person addition should concatenate names"
-                Expect.equal combined.Age 55 "Person addition should add ages"
-                Expect.isTrue combined.IsActive "Person addition should OR IsActive"
+                Expect.equal combined.Name "JohnDoe" "TestPerson addition should concatenate names"
+                Expect.equal combined.Age 55 "TestPerson addition should add ages"
+                Expect.isTrue combined.IsActive "TestPerson addition should OR IsActive"
                 
                 // Test the + operator too
                 let combined2 = p1 + p2
-                Expect.equal combined2.Name "JohnDoe" "Person + operator should concatenate names"
-                Expect.equal combined2.Age 55 "Person + operator should add ages"
-                Expect.isTrue combined2.IsActive "Person + operator should OR IsActive"
+                Expect.equal combined2.Name "JohnDoe" "TestPerson + operator should concatenate names"
+                Expect.equal combined2.Age 55 "TestPerson + operator should add ages"
+                Expect.isTrue combined2.IsActive "TestPerson + operator should OR IsActive"
         ]
         
         testList "Advanced Usage" [
@@ -176,9 +187,9 @@ let numericTests =
                 
             testCase "Edge cases are handled correctly" <| fun _ ->
                 // Empty array operations
-                Expect.equal (sum [||]) 0 "Sum of empty int array should be 0"
+                Expect.equal (sum ([||] : int[])) 0 "Sum of empty int array should be 0"
                 Expect.equal (sum (Array.empty<float>)) 0.0 "Sum of empty float array should be 0.0"
-                Expect.equal (average [||]) 0 "Average of empty int array should be 0"
+                Expect.equal (average ([||] : int[])) 0 "Average of empty int array should be 0"
                 Expect.equal (average (Array.empty<float>)) 0.0 "Average of empty float array should be 0.0"
                 
                 // Operations with default values
