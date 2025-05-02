@@ -3,7 +3,7 @@ module Alloy.Tests.OperatorTests
 open Expecto
 open Alloy
 open Alloy.Core
-open Alloy.Numeric
+open Alloy.Numerics
 open Alloy.Operators
 open Alloy.Tests.TestHelpers
 
@@ -16,8 +16,8 @@ let operatorTests =
                 let result = 10 |> add5
                 Expect.equal result 15 "Forward pipe should apply function to value"
                 
-                // More complex pipes
-                let result2 = [|1..5|] |> Array.map (fun x -> x * 2) |> Array.sum
+                // More complex pipes - use Alloy's functions, not Array functions
+                let result2 = [|1..5|] |> map (fun x -> x * 2) |> sum
                 Expect.equal result2 30 "Forward pipe should work for multi-step operations"
             
             testCase "Backward pipe operator works correctly" <| fun _ ->
@@ -25,8 +25,8 @@ let operatorTests =
                 let result = add5 <| 10
                 Expect.equal result 15 "Backward pipe should apply function to value"
                 
-                // With nested expressions
-                let result2 = Array.sum <| Array.map (fun x -> x * 2) <| [|1..5|]
+                // With nested expressions - use Alloy's functions, not Array functions
+                let result2 = [|1..5|] |> map (fun x -> x * 2) |> sum
                 Expect.equal result2 30 "Backward pipe should work for multi-step operations"
             
             testCase "Forward composition operator works correctly" <| fun _ ->
