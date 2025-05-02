@@ -44,6 +44,9 @@ type Vector2D =
     
     static member DefaultValue = { X = 0.0; Y = 0.0 }
     
+    // Match exactly the SRTP constraint signature that default_value function expects
+    static member Default (_: Vector2D -> unit) = { X = 0.0; Y = 0.0 }
+    
     static member Equals(a: Vector2D, b: Vector2D) =
         abs (a.X - b.X) < 1e-10 && abs (a.Y - b.Y) < 1e-10
         
@@ -51,7 +54,7 @@ type Vector2D =
         sprintf "{ X = %f; Y = %f }" this.X this.Y
 
 /// Person record for testing custom types
-type Person = 
+type TestPerson = 
     { Name: string
       Age: int
       IsActive: bool }
@@ -60,10 +63,13 @@ type Person =
     static member Zero = { Name = ""; Age = 0; IsActive = false }
     static member One = { Name = "John"; Age = 1; IsActive = true }
     
-    static member Equals(a: Person, b: Person) =
+    // Match exactly the SRTP constraint signature for default_value
+    static member Default (_: TestPerson -> unit) = { Name = ""; Age = 0; IsActive = false }
+    
+    static member Equals(a: TestPerson, b: TestPerson) =
         a.Name = b.Name && a.Age = b.Age && a.IsActive = b.IsActive
     
-    static member Add(a: Person, b: Person) =
+    static member Add(a: TestPerson, b: TestPerson) =
         { Name = a.Name + b.Name; Age = a.Age + b.Age; IsActive = a.IsActive || b.IsActive }
 
 /// Test helper functions
