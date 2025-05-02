@@ -11,11 +11,12 @@ open Alloy.Core
 module Internal =
     [<AbstractClass; Sealed>]
     type Add =
-        static member inline Add((a: int, b: int)) = a + b
-        static member inline Add((a: float, b: float)) = a + b
-        static member inline Add((a: int64, b: int64)) = a + b
-        static member inline Add((a: uint64, b: uint64)) = a + b
-        static member inline Add((a: float32, b: float32)) = a + b
+        // Changed from tuple notation to separate parameters
+        static member inline Add(a: int, b: int) = a + b
+        static member inline Add(a: float, b: float) = a + b
+        static member inline Add(a: int64, b: int64) = a + b
+        static member inline Add(a: uint64, b: uint64) = a + b
+        static member inline Add(a: float32, b: float32) = a + b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -24,11 +25,12 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Subtract =
-        static member inline Subtract((a: int, b: int)) = a - b
-        static member inline Subtract((a: float, b: float)) = a - b
-        static member inline Subtract((a: int64, b: int64)) = a - b
-        static member inline Subtract((a: uint64, b: uint64)) = a - b
-        static member inline Subtract((a: float32, b: float32)) = a - b
+        // Changed from tuple notation to separate parameters
+        static member inline Subtract(a: int, b: int) = a - b
+        static member inline Subtract(a: float, b: float) = a - b
+        static member inline Subtract(a: int64, b: int64) = a - b
+        static member inline Subtract(a: uint64, b: uint64) = a - b
+        static member inline Subtract(a: float32, b: float32) = a - b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -37,11 +39,12 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Multiply =
-        static member inline Multiply((a: int, b: int)) = a * b
-        static member inline Multiply((a: float, b: float)) = a * b
-        static member inline Multiply((a: int64, b: int64)) = a * b
-        static member inline Multiply((a: uint64, b: uint64)) = a * b
-        static member inline Multiply((a: float32, b: float32)) = a * b
+        // Changed from tuple notation to separate parameters
+        static member inline Multiply(a: int, b: int) = a * b
+        static member inline Multiply(a: float, b: float) = a * b
+        static member inline Multiply(a: int64, b: int64) = a * b
+        static member inline Multiply(a: uint64, b: uint64) = a * b
+        static member inline Multiply(a: float32, b: float32) = a * b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -50,11 +53,12 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Divide =
-        static member inline Divide((a: int, b: int)) = a / b
-        static member inline Divide((a: float, b: float)) = a / b
-        static member inline Divide((a: int64, b: int64)) = a / b
-        static member inline Divide((a: uint64, b: uint64)) = a / b
-        static member inline Divide((a: float32, b: float32)) = a / b
+        // Changed from tuple notation to separate parameters
+        static member inline Divide(a: int, b: int) = a / b
+        static member inline Divide(a: float, b: float) = a / b
+        static member inline Divide(a: int64, b: int64) = a / b
+        static member inline Divide(a: uint64, b: uint64) = a / b
+        static member inline Divide(a: float32, b: float32) = a / b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -63,11 +67,12 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Min =
-        static member inline Min((a: int, b: int)) = min a b
-        static member inline Min((a: float, b: float)) = min a b
-        static member inline Min((a: int64, b: int64)) = min a b
-        static member inline Min((a: uint64, b: uint64)) = min a b
-        static member inline Min((a: float32, b: float32)) = min a b
+        // Changed from tuple notation to separate parameters
+        static member inline Min(a: int, b: int) = min a b
+        static member inline Min(a: float, b: float) = min a b
+        static member inline Min(a: int64, b: int64) = min a b
+        static member inline Min(a: uint64, b: uint64) = min a b
+        static member inline Min(a: float32, b: float32) = min a b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -76,11 +81,12 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Max =
-        static member inline Max((a: int, b: int)) = max a b
-        static member inline Max((a: float, b: float)) = max a b
-        static member inline Max((a: int64, b: int64)) = max a b
-        static member inline Max((a: uint64, b: uint64)) = max a b
-        static member inline Max((a: float32, b: float32)) = max a b
+        // Changed from tuple notation to separate parameters
+        static member inline Max(a: int, b: int) = max a b
+        static member inline Max(a: float, b: float) = max a b
+        static member inline Max(a: int64, b: int64) = max a b
+        static member inline Max(a: uint64, b: uint64) = max a b
+        static member inline Max(a: float32, b: float32) = max a b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =

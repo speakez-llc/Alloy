@@ -1,5 +1,3 @@
-/// Operator symbols for the Alloy library
-[<AutoOpen>]
 module Alloy.Operators
 
 #nowarn "86" // Suppress warnings about redefining = and <> operators

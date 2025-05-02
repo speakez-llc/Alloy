@@ -1,4 +1,3 @@
-/// String operations for the Alloy library
 namespace Alloy
 
 /// Module containing optimized string operations

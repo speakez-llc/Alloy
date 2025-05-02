@@ -1,4 +1,3 @@
-/// Span-based operations for zero-allocation memory manipulation
 module Alloy.Span
 
 open System
@@ -32,7 +31,10 @@ let inline sliceReadOnlySpan (array: 'T[]) (start: int) (length: int) : ReadOnly
 /// Maps a function over elements in a Span and writes results to a destination Span
 /// This operation doesn't allocate a new Span
 let inline mapSpan (mapper: 'T -> 'U) (source: ReadOnlySpan<'T>) (destination: Span<'U>) : unit =
-    let length = min source.Length destination.Length
+    // Create a local helper function for finding minimum of two integers
+    // This avoids the ambiguity between Numeric.min and F#'s built-in min
+    let minLength a b = if a < b then a else b
+    let length = minLength source.Length destination.Length
     for i = 0 to length - 1 do
         destination.[i] <- mapper source.[i]
 
@@ -52,7 +54,9 @@ let inline copySpan (source: ReadOnlySpan<'T>) (destination: Span<'T>) : unit =
 /// Returns the number of elements written to the destination
 let inline filterSpan (predicate: 'T -> bool) (source: ReadOnlySpan<'T>) (destination: Span<'T>) : int =
     let mutable count = 0
-    let length = min source.Length destination.Length
+    // Create a local helper function for finding minimum of two integers
+    let minLength a b = if a < b then a else b
+    let length = minLength source.Length destination.Length
     
     for i = 0 to source.Length - 1 do
         if predicate source.[i] && count < length then

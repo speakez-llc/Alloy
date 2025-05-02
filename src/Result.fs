@@ -1,4 +1,3 @@
-/// Result handling operations for error management
 namespace Alloy
 
 /// Module containing Result operations

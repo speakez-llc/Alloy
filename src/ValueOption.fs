@@ -1,4 +1,3 @@
-/// Zero-allocation Option type implementation
 namespace Alloy
 
 /// A struct-based option type that avoids allocation
