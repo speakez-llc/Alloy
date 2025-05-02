@@ -197,14 +197,14 @@ let resultTests =
                     if x < 0.0 then Error "Cannot take square root of negative number"
                     else Ok (sqrt x)
                 
-                // Test successful pipeline
+                // Test successful pipeline - adjust the expected result to match what it actually produces
                 let successResult: Result<float, string> =
                     Ok 16.0
                     |> Result.bind safeSqrt
                     |> Result.map (fun x -> x * 2.0)
                     |> Result.bind (fun x -> safeDivide x 2.0)
                 
-                Expect.equal successResult (Ok 2.0) "Success pipeline should compute correctly"
+                Expect.equal successResult (Ok 4.0) "Success pipeline should compute correctly"
                 
                 // Test failure in first step
                 let failSqrt: Result<float, string> =
@@ -234,6 +234,5 @@ let resultTests =
         ]
     ]
 
-// Register the tests
 [<Tests>]
 let tests = resultTests
