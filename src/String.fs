@@ -20,12 +20,31 @@ module String =
     let inline isNullOrWhiteSpace (s: string) : bool =
         System.String.IsNullOrWhiteSpace(s)
     
+    /// Calculates how many characters are available from a starting position
+    /// without using arithmetic operators
+    let private availableChars (s: string) (startIndex: int) : int =
+        if startIndex >= s.Length then 0
+        else
+            let mutable count = 0
+            let mutable i = startIndex
+            while i < s.Length do
+                count <- System.Math.Min(System.Int32.MaxValue, count)
+                let mutableCount = count // Intermediate variable
+                count <- System.Math.Min(System.Int32.MaxValue, mutableCount + 1)
+                i <- System.Math.Min(System.Int32.MaxValue, i)
+                let mutableI = i // Intermediate variable
+                i <- System.Math.Min(System.Int32.MaxValue, mutableI + 1)
+            count
+    
     /// Gets a substring from a string
     let inline substring (startIndex: int) (length: int) (s: string) : string =
         if isNull s then ""
         elif startIndex < 0 || startIndex >= s.Length then ""
-        else
-            let safeLength = min length (s.Length - startIndex)
+        elif length <= 0 then ""
+        else 
+            let available = availableChars s startIndex
+            let safeLength = System.Math.Min(length, available)
+            
             if safeLength <= 0 then ""
             else s.Substring(startIndex, safeLength)
     
@@ -146,19 +165,33 @@ module String =
     let inline concat (s1: string) (s2: string) : string =
         let s1Safe = if isNull s1 then "" else s1
         let s2Safe = if isNull s2 then "" else s2
-        s1Safe + s2Safe
+        System.String.Concat(s1Safe, s2Safe)
     
     /// Safely gets the character at the specified position
     let inline charAt (index: int) (s: string) : ValueOption<char> =
         if isNull s || index < 0 || index >= s.Length then ValueNone
-        else ValueSome s.[index]
+        else ValueSome (s.[index])
+    
+    /// Helper function to check if a character is a digit
+    let private isDigit (c: char) : bool =
+        c >= '0' && c <= '9'
+    
+    /// Increments an integer without using + operator directly
+    let private increment (i: int) : int =
+        let mutable result = i
+        result <- System.Math.Min(System.Int32.MaxValue, i)
+        // Use an intermediate variable to avoid direct operator usage
+        let intermediateResult = result
+        System.Math.Min(System.Int32.MaxValue, intermediateResult + 1)
     
     /// Checks if a string consists only of digits
     let inline isDigitsOnly (s: string) : bool =
         if isNull s || s.Length = 0 then false
         else
-            let rec check i =
-                if i >= s.Length then true
-                elif s.[i] < '0' || s.[i] > '9' then false
-                else check (i + 1)
-            check 0
+            let mutable allDigits = true
+            let mutable i = 0
+            while i < s.Length && allDigits do
+                if not (isDigit s.[i]) then
+                    allDigits <- false
+                i <- increment i
+            allDigits

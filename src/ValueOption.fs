@@ -55,7 +55,7 @@ type ValueOption<'T> =
     static member Some(x: 'T) = ValueSome x
     
     /// Creates a None value
-    static member None() = ValueNone
+    static member None = ValueNone
     
     /// Checks if the option has a value
     static member HasValue (opt: ValueOption<'T>) = opt.IsSome

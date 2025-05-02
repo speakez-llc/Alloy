@@ -2,7 +2,6 @@
 module Alloy.Span
 
 open System
-open Fsil
 open Alloy.Core
 open Alloy.Numeric
 
@@ -70,9 +69,10 @@ let inline foldSpan (folder: 'State -> 'T -> 'State) (state: 'State) (span: Read
     result
 
 /// Sums all elements in a Span
-let inline sumSpan (span: ReadOnlySpan<'T>) : 'T =
+let inline sumSpan<'T when 'T: (static member Zero: 'T) and (^T or Alloy.Numeric.Internal.Add): (static member Add: ^T * ^T -> ^T)> 
+    (span: ReadOnlySpan<'T>) : 'T =
     if span.Length = 0 then 
-        Abstract.zero<'T>()  // Use fsil's zero directly
+        zero<'T>
     else
         let mutable result = span.[0]
         for i = 1 to span.Length - 1 do
@@ -80,30 +80,35 @@ let inline sumSpan (span: ReadOnlySpan<'T>) : 'T =
         result
 
 /// Computes the average of elements in a Span
-let inline averageSpan< ^T when ^T : (static member Zero : ^T) and 
-                            ^T : (static member (+) : ^T * ^T -> ^T) and
-                            ^T : (static member (/) : ^T * int -> ^T)> 
-    (span: ReadOnlySpan< ^T>) : ^T =
+let inline averageSpan<'T when 'T: (static member Zero: 'T) 
+                        and (^T or Alloy.Numeric.Internal.Add): (static member Add: ^T * ^T -> ^T)
+                        and (^T or Alloy.Numeric.Internal.Divide): (static member Divide: ^T * ^T -> ^T)> 
+    (span: ReadOnlySpan<'T>) : 'T =
     if span.Length = 0 then 
-        (^T : (static member Zero : ^T) ())
+        zero<'T>
     else
         let mutable sum = span.[0]
         for i = 1 to span.Length - 1 do
-            sum <- sum + span.[i]
-        sum / span.Length
-    
-// --------------------------------------------------
-// Helper functions
-// --------------------------------------------------
-
-/// Convert an integer to a generic numeric type
-/// Convert an integer to a generic numeric type
-let inline private fromInteger< ^T when ^T : (static member Zero : ^T) and 
-                                     ^T : (static member (+) : ^T * ^T -> ^T) and
-                                     ^T : (static member One : ^T)> 
-    (value: int) : ^T =
-    let mutable result = (^T : (static member Zero : ^T) ())
-    let one = (^T : (static member One : ^T) ())
-    for _ = 1 to value do
-        result <- result + one
-    result
+            sum <- Numeric.add sum span.[i]
+            
+        // For numeric primitives - direct handling
+        match box sum with
+        | :? int as intSum -> box (intSum / span.Length) :?> 'T
+        | :? float as floatSum -> box (floatSum / float span.Length) :?> 'T
+        | :? int64 as longSum -> box (longSum / int64 span.Length) :?> 'T
+        | :? float32 as floatSum -> box (floatSum / float32 span.Length) :?> 'T
+        | _ -> 
+            // For custom types with Divide operation
+            // Create a divisor of the appropriate type
+            let divisor =
+                match box 0 with
+                | :? int -> box span.Length :?> 'T
+                | :? float -> box (float span.Length) :?> 'T
+                | :? int64 -> box (int64 span.Length) :?> 'T
+                | :? float32 -> box (float32 span.Length) :?> 'T
+                | _ -> 
+                    // Convert length to the same type as T
+                    // This is a fallback and may not work for all types
+                    box span.Length :?> 'T
+                    
+            Numeric.divide sum divisor

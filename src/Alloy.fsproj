@@ -3,9 +3,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <TrimMode>full</TrimMode>
-    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="8.0.100" />
     <PackageReference Include="fsil" Version="1.0.19" />
   </ItemGroup>
 </Project>

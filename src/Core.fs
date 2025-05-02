@@ -24,19 +24,20 @@ let inline mapi f x = mapi f x
 let inline len source = len source
 
 /// Gets the zero value for a type
-let inline zero<'a when 'a: (static member Zero: 'a)>() = zero<'a>()
+let inline zero<'a when 'a: (static member Zero: 'a)> = Abstract.zero<'a>
 
 /// Gets the one/unit value for a type
-let inline one<'a>() = one<'a>()
+let inline one<'a when 'a: (static member One: 'a)> = Abstract.one<'a>
 
 /// Gets the default value for a type
-let inline default_value<'t>() = _default<'t>()
+let inline default_value<'t when (^t or Internal.Default): (static member Default: (^t -> unit) -> ^t)> = 
+    Abstract._default<'t>
 
 /// Uses a fallback function if a value is None
 let inline default_with f x = default_with f x
 
 /// Converts a value to string
-let inline to_string x = to_string x
+let inline string x = string x
 
 /// Print a value to stdout
 let inline print x = print x
@@ -55,7 +56,7 @@ let inline is_none x = is_none x
 let inline value x = value x
 
 /// Creates a None option
-let inline none() = none()
+let inline none<'a when 'a: (static member None: 'a)> = Abstract.none<'a>
 
 /// Wraps a value in Some
 let inline some x = some x
