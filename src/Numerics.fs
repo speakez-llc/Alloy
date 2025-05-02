@@ -11,7 +11,6 @@ open Alloy.Core
 module Internal =
     [<AbstractClass; Sealed>]
     type Add =
-        // Changed from tuple notation to separate parameters
         static member inline Add(a: int, b: int) = a + b
         static member inline Add(a: float, b: float) = a + b
         static member inline Add(a: int64, b: int64) = a + b
@@ -25,7 +24,6 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Subtract =
-        // Changed from tuple notation to separate parameters
         static member inline Subtract(a: int, b: int) = a - b
         static member inline Subtract(a: float, b: float) = a - b
         static member inline Subtract(a: int64, b: int64) = a - b
@@ -39,7 +37,6 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Multiply =
-        // Changed from tuple notation to separate parameters
         static member inline Multiply(a: int, b: int) = a * b
         static member inline Multiply(a: float, b: float) = a * b
         static member inline Multiply(a: int64, b: int64) = a * b
@@ -53,7 +50,6 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Divide =
-        // Changed from tuple notation to separate parameters
         static member inline Divide(a: int, b: int) = a / b
         static member inline Divide(a: float, b: float) = a / b
         static member inline Divide(a: int64, b: int64) = a / b
@@ -67,12 +63,11 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Min =
-        // Changed from tuple notation to separate parameters
-        static member inline Min(a: int, b: int) = min a b
-        static member inline Min(a: float, b: float) = min a b
-        static member inline Min(a: int64, b: int64) = min a b
-        static member inline Min(a: uint64, b: uint64) = min a b
-        static member inline Min(a: float32, b: float32) = min a b
+        static member inline Min(a: int, b: int) = if a < b then a else b
+        static member inline Min(a: float, b: float) = if a < b then a else b
+        static member inline Min(a: int64, b: int64) = if a < b then a else b
+        static member inline Min(a: uint64, b: uint64) = if a < b then a else b
+        static member inline Min(a: float32, b: float32) = if a < b then a else b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -81,12 +76,11 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Max =
-        // Changed from tuple notation to separate parameters
-        static member inline Max(a: int, b: int) = max a b
-        static member inline Max(a: float, b: float) = max a b
-        static member inline Max(a: int64, b: int64) = max a b
-        static member inline Max(a: uint64, b: uint64) = max a b
-        static member inline Max(a: float32, b: float32) = max a b
+        static member inline Max(a: int, b: int) = if a > b then a else b
+        static member inline Max(a: float, b: float) = if a > b then a else b
+        static member inline Max(a: int64, b: int64) = if a > b then a else b
+        static member inline Max(a: uint64, b: uint64) = if a > b then a else b
+        static member inline Max(a: float32, b: float32) = if a > b then a else b
         
         static member inline Invoke (a: ^T) (b: ^T) : ^T =
             let inline call_2 (a: ^T, b: ^T) =
@@ -171,11 +165,11 @@ let inline multiply a b = Internal.Multiply.Invoke a b
 /// Divide a by b
 let inline divide a b = Internal.Divide.Invoke a b
 
-/// Return the minimum of two values
-let inline min a b = Internal.Min.Invoke a b
+/// Return the minimum of two values (renamed to avoid conflicts with F# built-in min)
+let inline staticMin a b = Internal.Min.Invoke a b
 
-/// Return the maximum of two values
-let inline max a b = Internal.Max.Invoke a b
+/// Return the maximum of two values (renamed to avoid conflicts with F# built-in max)
+let inline staticMax a b = Internal.Max.Invoke a b
 
 /// Sum all elements in a collection
 let inline sum collection = Internal.Sum.Invoke collection

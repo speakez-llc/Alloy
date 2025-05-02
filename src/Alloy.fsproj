@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Compile Include="Core.fs" />
-    <Compile Include="Numeric.fs" />
+    <Compile Include="Numerics.fs" />
     <Compile Include="Span.fs" />
     <Compile Include="Operators.fs" />
     <Compile Include="ValueOption.fs" />
