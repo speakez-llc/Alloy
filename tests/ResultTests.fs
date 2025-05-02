@@ -92,25 +92,26 @@ let resultTests =
         ]
         
         testList "Conversion Functions" [
-            testCase "ofValueOption converts ValueOption to Result" <| fun _ ->
-                let someInput = ValueSome 5
-                let noneInput = ValueNone
+            testCase "ofStaticOption converts StaticOption to Result" <| fun _ ->
+                let someInput = StaticOption.Some 5
+                let noneInput = StaticOption<int>.None
                 
-                let someResult = Result.ofValueOption "none" someInput
-                Expect.equal someResult (Ok 5) "ofValueOption should convert ValueSome to Ok"
+                let someResult = Result.ofStaticOption "none" someInput
+                Expect.equal someResult (Ok 5) "ofStaticOption should convert Some to Ok"
                 
-                let noneResult = Result.ofValueOption "none" noneInput
-                Expect.equal noneResult (Error "none") "ofValueOption should convert ValueNone to Error with provided error"
+                let noneResult = Result.ofStaticOption "none" noneInput
+                Expect.equal noneResult (Error "none") "ofStaticOption should convert None to Error with provided error"
             
-            testCase "toValueOption converts Result to ValueOption" <| fun _ ->
+            testCase "toStaticOption converts Result to StaticOption" <| fun _ ->
                 let okInput: Result<int, string> = Ok 5
                 let errorInput: Result<int, string> = Error "error"
                 
-                let someResult = Result.toValueOption okInput
-                Expect.equal someResult (ValueSome 5) "toValueOption should convert Ok to ValueSome"
+                let someResult = Result.toStaticOption okInput
+                Expect.isTrue (someResult.IsSome) "toStaticOption should convert Ok to Some"
+                Expect.equal (someResult.Value) 5 "toStaticOption should preserve the Ok value"
                 
-                let noneResult = Result.toValueOption errorInput
-                Expect.equal noneResult ValueNone "toValueOption should convert Error to ValueNone"
+                let noneResult = Result.toStaticOption errorInput
+                Expect.isTrue (noneResult.IsNone) "toStaticOption should convert Error to None"
             
             testCase "ofOption converts Option to Result" <| fun _ ->
                 let someInput = Some 5
@@ -197,8 +198,8 @@ let resultTests =
                     if x < 0.0 then Error "Cannot take square root of negative number"
                     else Ok (sqrt x)
                 
-                // Test successful pipeline - adjust the expected result to match what it actually produces
-                let successResult: Result<float, string> =
+                // Test successful pipeline
+                let successResult =
                     Ok 16.0
                     |> Result.bind safeSqrt
                     |> Result.map (fun x -> x * 2.0)
@@ -207,7 +208,7 @@ let resultTests =
                 Expect.equal successResult (Ok 4.0) "Success pipeline should compute correctly"
                 
                 // Test failure in first step
-                let failSqrt: Result<float, string> =
+                let failSqrt =
                     Ok -4.0
                     |> Result.bind safeSqrt
                     |> Result.map (fun x -> x * 2.0)
@@ -216,7 +217,7 @@ let resultTests =
                 Expect.equal failSqrt (Error "Cannot take square root of negative number") "First failure should short-circuit"
                 
                 // Test failure in last step
-                let failDivide: Result<float, string> =
+                let failDivide =
                     Ok 16.0
                     |> Result.bind safeSqrt
                     |> Result.map (fun x -> x * 2.0)

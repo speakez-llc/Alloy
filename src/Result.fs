@@ -38,19 +38,20 @@ module Result =
     /// Creates an Error result
     let error (error: 'Error) : Result<'T, 'Error> = Error error
     
-    /// Creates a Result from a ValueOption
+    /// Creates a Result from a StaticOption
     /// Returns Ok if Some, or Error with the provided error value if None
-    let ofValueOption (error: 'Error) (option: ValueOption<'T>) : Result<'T, 'Error> =
-        match option with
-        | ValueSome value -> Ok value
-        | ValueNone -> Error error
+    let ofStaticOption (error: 'Error) (option: StaticOption<'T>) : Result<'T, 'Error> =
+        if option.IsSome then 
+            Ok option.Value
+        else 
+            Error error
     
-    /// Creates a ValueOption from a Result
+    /// Creates a StaticOption from a Result
     /// Returns Some if Ok, or None if Error
-    let toValueOption (result: Result<'T, 'Error>) : ValueOption<'T> =
+    let toStaticOption (result: Result<'T, 'Error>) : StaticOption<'T> =
         match result with
-        | Ok value -> ValueSome value
-        | Error _ -> ValueNone
+        | Ok value -> StaticOption.Some value
+        | Error _ -> StaticOption<'T>.None
     
     /// Creates a Result from an Option
     /// Returns Ok if Some, or Error with the provided error value if None
