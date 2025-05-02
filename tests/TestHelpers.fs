@@ -1,12 +1,13 @@
 module Alloy.Tests.TestHelpers
 
 open Expecto
+open System
 
-/// Helper to create a custom Vector2D type for testing extension capabilities
+/// Custom Vector2D type for testing numeric operations and abstractions
 type Vector2D = 
     { X: float; Y: float }
     
-    // Implement operations for Alloy
+    // Static members for Alloy operations
     static member Add(a: Vector2D, b: Vector2D) = 
         { X = a.X + b.X; Y = a.Y + b.Y }
     
@@ -26,8 +27,10 @@ type Vector2D =
         { X = max a.X b.X; Y = max a.Y b.Y }
     
     static member Sum(vectors: Vector2D[]) =
-        vectors |> Array.fold (fun state vec -> 
-            { X = state.X + vec.X; Y = state.Y + vec.Y }) { X = 0.0; Y = 0.0 }
+        if vectors.Length = 0 then { X = 0.0; Y = 0.0 }
+        else
+            vectors |> Array.fold (fun state vec -> 
+                { X = state.X + vec.X; Y = state.Y + vec.Y }) { X = 0.0; Y = 0.0 }
     
     static member Average(vectors: Vector2D[]) =
         if vectors.Length = 0 then { X = 0.0; Y = 0.0 }
@@ -42,12 +45,12 @@ type Vector2D =
     static member DefaultValue = { X = 0.0; Y = 0.0 }
     
     static member Equals(a: Vector2D, b: Vector2D) =
-        a.X = b.X && a.Y = b.Y
+        abs (a.X - b.X) < 1e-10 && abs (a.Y - b.Y) < 1e-10
         
     override this.ToString() =
         sprintf "{ X = %f; Y = %f }" this.X this.Y
 
-/// Sample complex record type for testing
+/// Person record for testing custom types
 type Person = 
     { Name: string
       Age: int
@@ -59,37 +62,40 @@ type Person =
     
     static member Equals(a: Person, b: Person) =
         a.Name = b.Name && a.Age = b.Age && a.IsActive = b.IsActive
+    
+    static member Add(a: Person, b: Person) =
+        { Name = a.Name + b.Name; Age = a.Age + b.Age; IsActive = a.IsActive || b.IsActive }
 
-/// Helper functions for test assertions
-let expectEqual<'T> = Expect.equal
+/// Test helper functions
+let expectEqual<'T when 'T : equality> = Expect.equal
 
-/// Extension to test close-enough equality for floats
+/// Helper for expecting approximate floating-point equality
 let expectFloatClose precision (actual: float) (expected: float) message =
     Expect.floatClose precision expected actual message
 
-/// Helper for easy array equality checks
+/// Helper for array equality
 let expectArrayEqual<'T when 'T : equality> (actual: 'T[]) (expected: 'T[]) message =
     Expect.sequenceEqual actual expected message
 
-/// Extension for span equality testing
-let expectSpanEqual<'T when 'T : equality> (actual: System.Span<'T>) (expected: System.Span<'T>) message =
+/// Helper for Span equality
+let expectSpanEqual<'T when 'T : equality> (actual: Span<'T>) (expected: Span<'T>) message =
     if actual.Length <> expected.Length then
         failtestf "%s. Spans have different lengths: actual=%d, expected=%d" 
             message actual.Length expected.Length
             
     for i = 0 to actual.Length - 1 do
-        if actual.[i] <> expected.[i] then
+        if not (actual.[i] = expected.[i]) then
             failtestf "%s. Span elements differ at index %d: actual=%A, expected=%A" 
                 message i actual.[i] expected.[i]
 
-/// Extension for ReadOnlySpan equality testing
+/// Helper for ReadOnlySpan equality
 let expectReadOnlySpanEqual<'T when 'T : equality> 
-    (actual: System.ReadOnlySpan<'T>) (expected: System.ReadOnlySpan<'T>) message =
+    (actual: ReadOnlySpan<'T>) (expected: ReadOnlySpan<'T>) message =
     if actual.Length <> expected.Length then
         failtestf "%s. Spans have different lengths: actual=%d, expected=%d" 
             message actual.Length expected.Length
             
     for i = 0 to actual.Length - 1 do
-        if actual.[i] <> expected.[i] then
+        if not (actual.[i] = expected.[i]) then
             failtestf "%s. Span elements differ at index %d: actual=%A, expected=%A" 
                 message i actual.[i] expected.[i]

@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Compile Include="TestHelpers.fs" />
-    <Compile Include="BasicTests.fs" />
-    <!--
     <Compile Include="CoreTests.fs" />
     <Compile Include="NumericTests.fs" />
     <Compile Include="OperatorTests.fs" />
@@ -17,7 +15,6 @@
     <Compile Include="SpanTests.fs" />
     <Compile Include="StringTests.fs" />
     <Compile Include="ValueOptionTests.fs" />
-    -->
     <Compile Include="Program.fs" />
   </ItemGroup>
 

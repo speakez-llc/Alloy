@@ -68,6 +68,17 @@ let resultTests =
                 let input = Error "error"
                 let result = Result.defaultWith (fun e -> e.Length) input
                 Expect.equal result 5 "defaultWith should apply the function to the Error value"
+                
+                // Test with side-effects
+                let mutable callCount = 0
+                let errorHandler _ = callCount <- callCount + 1; 99
+                
+                let _ = Result.defaultWith errorHandler (Ok 5)
+                Expect.equal callCount 0 "defaultWith should not call handler for Ok"
+                
+                callCount <- 0
+                let _ = Result.defaultWith errorHandler (Error "error")
+                Expect.equal callCount 1 "defaultWith should call handler once for Error"
         ]
         
         testList "Creation Functions" [
@@ -81,119 +92,146 @@ let resultTests =
         ]
         
         testList "Conversion Functions" [
-            testCase "ofValueOption converts ValueSome to Ok" <| fun _ ->
-                let input = ValueSome 5
-                let result = Result.ofValueOption "none" input
-                Expect.equal result (Ok 5) "ofValueOption should convert ValueSome to Ok"
+            testCase "ofValueOption converts ValueOption to Result" <| fun _ ->
+                let someInput = ValueSome 5
+                let noneInput = ValueNone
+                
+                let someResult = Result.ofValueOption "none" someInput
+                Expect.equal someResult (Ok 5) "ofValueOption should convert ValueSome to Ok"
+                
+                let noneResult = Result.ofValueOption "none" noneInput
+                Expect.equal noneResult (Error "none") "ofValueOption should convert ValueNone to Error with provided error"
             
-            testCase "ofValueOption converts ValueNone to Error" <| fun _ ->
-                let input = ValueNone
-                let result = Result.ofValueOption "none" input
-                Expect.equal result (Error "none") "ofValueOption should convert ValueNone to Error"
+            testCase "toValueOption converts Result to ValueOption" <| fun _ ->
+                let okInput = Ok 5
+                let errorInput = Error "error"
+                
+                let someResult = Result.toValueOption okInput
+                Expect.equal someResult (ValueSome 5) "toValueOption should convert Ok to ValueSome"
+                
+                let noneResult = Result.toValueOption errorInput
+                Expect.equal noneResult ValueNone "toValueOption should convert Error to ValueNone"
             
-            testCase "toValueOption converts Ok to ValueSome" <| fun _ ->
-                let input = Ok 5
-                let result = Result.toValueOption input
-                Expect.equal result (ValueSome 5) "toValueOption should convert Ok to ValueSome"
+            testCase "ofOption converts Option to Result" <| fun _ ->
+                let someInput = Some 5
+                let noneInput = None
+                
+                let someResult = Result.ofOption "none" someInput
+                Expect.equal someResult (Ok 5) "ofOption should convert Some to Ok"
+                
+                let noneResult = Result.ofOption "none" noneInput
+                Expect.equal noneResult (Error "none") "ofOption should convert None to Error with provided error"
             
-            testCase "toValueOption converts Error to ValueNone" <| fun _ ->
-                let input = Error "error"
-                let result = Result.toValueOption input
-                Expect.equal result ValueNone "toValueOption should convert Error to ValueNone"
-            
-            testCase "ofOption converts Some to Ok" <| fun _ ->
-                let input = Some 5
-                let result = Result.ofOption "none" input
-                Expect.equal result (Ok 5) "ofOption should convert Some to Ok"
-            
-            testCase "ofOption converts None to Error" <| fun _ ->
-                let input = None
-                let result = Result.ofOption "none" input
-                Expect.equal result (Error "none") "ofOption should convert None to Error"
-            
-            testCase "toOption converts Ok to Some" <| fun _ ->
-                let input = Ok 5
-                let result = Result.toOption input
-                Expect.equal result (Some 5) "toOption should convert Ok to Some"
-            
-            testCase "toOption converts Error to None" <| fun _ ->
-                let input = Error "error"
-                let result = Result.toOption input
-                Expect.equal result None "toOption should convert Error to None"
+            testCase "toOption converts Result to Option" <| fun _ ->
+                let okInput = Ok 5
+                let errorInput = Error "error"
+                
+                let someResult = Result.toOption okInput
+                Expect.equal someResult (Some 5) "toOption should convert Ok to Some"
+                
+                let noneResult = Result.toOption errorInput
+                Expect.equal noneResult None "toOption should convert Error to None"
         ]
         
         testList "Check Functions" [
-            testCase "isOk returns true for Ok" <| fun _ ->
-                let input = Ok 5
-                let result = Result.isOk input
-                Expect.isTrue result "isOk should return true for Ok"
-            
-            testCase "isOk returns false for Error" <| fun _ ->
-                let input = Error "error"
-                let result = Result.isOk input
-                Expect.isFalse result "isOk should return false for Error"
-            
-            testCase "isError returns true for Error" <| fun _ ->
-                let input = Error "error"
-                let result = Result.isError input
-                Expect.isTrue result "isError should return true for Error"
-            
-            testCase "isError returns false for Ok" <| fun _ ->
-                let input = Ok 5
-                let result = Result.isError input
-                Expect.isFalse result "isError should return false for Ok"
+            testCase "isOk/isError detect result type correctly" <| fun _ ->
+                let okResult = Ok 5
+                let errorResult = Error "error"
+                
+                Expect.isTrue (Result.isOk okResult) "isOk should be true for Ok"
+                Expect.isFalse (Result.isOk errorResult) "isOk should be false for Error"
+                
+                Expect.isFalse (Result.isError okResult) "isError should be false for Ok"
+                Expect.isTrue (Result.isError errorResult) "isError should be true for Error"
         ]
         
         testList "Advanced Operations" [
-            testCase "bimap transforms both Ok and Error" <| fun _ ->
-                let okInput: Result<int, string> = Ok 5
-                let errorInput: Result<int, string> = Error "error"
+            testCase "bimap transforms both cases correctly" <| fun _ ->
+                let okInput = Ok 5
+                let errorInput = Error "error"
                 
                 let okResult = Result.bimap (fun x -> x * 2) (fun e -> e.ToUpper()) okInput
-                let errorResult = Result.bimap (fun x -> x * 2) (fun e -> e.ToUpper()) errorInput
-                
                 Expect.equal okResult (Ok 10) "bimap should transform Ok value"
+                
+                let errorResult = Result.bimap (fun x -> x * 2) (fun e -> e.ToUpper()) errorInput
                 Expect.equal errorResult (Error "ERROR") "bimap should transform Error value"
             
-            testCase "filter keeps Ok value that passes predicate" <| fun _ ->
-                let input = Ok 10
-                let result = Result.filter (fun x -> x > 5) "too small" input
-                Expect.equal result (Ok 10) "filter should keep Ok value that passes predicate"
+            testCase "filter checks Ok value against predicate" <| fun _ ->
+                let okInput = Ok 5
+                
+                let passes = Result.filter (fun x -> x > 0) "negative" okInput
+                Expect.equal passes (Ok 5) "filter should pass when predicate is true"
+                
+                let fails = Result.filter (fun x -> x > 10) "too small" okInput
+                Expect.equal fails (Error "too small") "filter should convert to Error when predicate is false"
+                
+                let errorInput = Error "original error"
+                let errorResult = Result.filter (fun _ -> true) "new error" errorInput
+                Expect.equal errorResult errorInput "filter should preserve original Error"
             
-            testCase "filter converts Ok to Error when predicate fails" <| fun _ ->
-                let input = Ok 3
-                let result = Result.filter (fun x -> x > 5) "too small" input
-                Expect.equal result (Error "too small") "filter should convert Ok to Error when predicate fails"
+            testCase "map2 combines two results" <| fun _ ->
+                let ok1 = Ok 5
+                let ok2 = Ok 10
+                
+                let errorInput = Error "error"
+                
+                let combinedOk = Result.map2 (fun a b -> a + b) ok1 ok2
+                Expect.equal combinedOk (Ok 15) "map2 should combine two Ok values"
+                
+                let errorLeft = Result.map2 (fun a b -> a + b) errorInput ok2
+                Expect.equal errorLeft errorInput "map2 should prioritize left Error"
+                
+                let errorRight = Result.map2 (fun a b -> a + b) ok1 errorInput
+                Expect.equal errorRight errorInput "map2 should use right Error if left is Ok"
+                
+                let errorBoth = Result.map2 (fun a b -> a + b) errorInput errorInput
+                Expect.equal errorBoth errorInput "map2 should prioritize left Error when both are Error"
+            ]
             
-            testCase "filter preserves Error value" <| fun _ ->
-                let input = Error "original error"
-                let result = Result.filter (fun x -> x > 5) "too small" input
-                Expect.equal result input "filter should preserve Error value"
-            
-            testCase "map2 combines two Ok results" <| fun _ ->
-                let input1: Result<int, string> = Ok 5
-                let input2: Result<int, string> = Ok 10
-                let result = Result.map2 (fun a b -> a + b) input1 input2
-                Expect.equal result (Ok 15) "map2 should combine two Ok results"
-            
-            testCase "map2 returns first Error on left side" <| fun _ ->
-                let input1: Result<int, string> = Error "error 1"
-                let input2: Result<int, string> = Ok 10
-                let result = Result.map2 (fun a b -> a + b) input1 input2
-                Expect.equal result (Error "error 1") "map2 should return first Error on left side"
-            
-            testCase "map2 returns first Error on right side" <| fun _ ->
-                let input1: Result<int, string> = Ok 5
-                let input2: Result<int, string> = Error "error 2"
-                let result = Result.map2 (fun a b -> a + b) input1 input2
-                Expect.equal result (Error "error 2") "map2 should return first Error on right side"
-            
-            testCase "map2 returns first Error when both inputs are Error" <| fun _ ->
-                let input1: Result<int, string> = Error "error 1"
-                let input2: Result<int, string> = Error "error 2"
-                let result = Result.map2 (fun a b -> a + b) input1 input2
-                Expect.equal result (Error "error 1") "map2 should return first Error when both inputs are Error"
-        ]
+            testCase "Complex error handling flow" <| fun _ ->
+                // Define a series of operations that might fail
+                let safeDivide x y =
+                    if y = 0 then Error "Division by zero"
+                    else Ok (x / y)
+                
+                let safeSqrt x =
+                    if x < 0 then Error "Cannot take square root of negative number"
+                    else Ok (sqrt x)
+                
+                // Test successful pipeline
+                let successResult =
+                    Ok 16.0
+                    |> Result.bind safeSqrt
+                    |> Result.map (fun x -> x * 2.0)
+                    |> Result.bind (fun x -> safeDivide x 2.0)
+                
+                Expect.equal successResult (Ok 2.0) "Success pipeline should compute correctly"
+                
+                // Test failure in first step
+                let failSqrt =
+                    Ok -4.0
+                    |> Result.bind safeSqrt
+                    |> Result.map (fun x -> x * 2.0)
+                    |> Result.bind (fun x -> safeDivide x 2.0)
+                
+                Expect.equal failSqrt (Error "Cannot take square root of negative number") "First failure should short-circuit"
+                
+                // Test failure in last step
+                let failDivide =
+                    Ok 16.0
+                    |> Result.bind safeSqrt
+                    |> Result.map (fun x -> x * 2.0)
+                    |> Result.bind (fun x -> safeDivide x 0.0)
+                
+                Expect.equal failDivide (Error "Division by zero") "Last failure should be returned"
+                
+                // Test error mapping
+                let errorHandled =
+                    failDivide 
+                    |> Result.mapError (fun e -> $"Calculation error: {e}")
+                    |> Result.defaultValue 0.0
+                
+                Expect.equal errorHandled 0.0 "Error should be mapped and default used"
     ]
 
 // Register the tests
