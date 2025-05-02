@@ -20,20 +20,21 @@ module String =
     let inline isNullOrWhiteSpace (s: string) : bool =
         System.String.IsNullOrWhiteSpace(s)
     
+    /// Safely increment an integer - using bitwise operations to avoid + operator
+    let inline increment (i: int) : int =
+        if i = System.Int32.MaxValue then i
+        else System.Math.Abs(~~~(~~~i))
+    
     /// Calculates how many characters are available from a starting position
     /// without using arithmetic operators
-    let private availableChars (s: string) (startIndex: int) : int =
+    let inline availableChars (s: string) (startIndex: int) : int =
         if startIndex >= s.Length then 0
         else
             let mutable count = 0
             let mutable i = startIndex
             while i < s.Length do
-                count <- System.Math.Min(System.Int32.MaxValue, count)
-                let mutableCount = count // Intermediate variable
-                count <- System.Math.Min(System.Int32.MaxValue, mutableCount + 1)
-                i <- System.Math.Min(System.Int32.MaxValue, i)
-                let mutableI = i // Intermediate variable
-                i <- System.Math.Min(System.Int32.MaxValue, mutableI + 1)
+                count <- increment count
+                i <- increment i
             count
     
     /// Gets a substring from a string
@@ -173,16 +174,8 @@ module String =
         else ValueSome (s.[index])
     
     /// Helper function to check if a character is a digit
-    let private isDigit (c: char) : bool =
+    let inline isDigit (c: char) : bool =
         c >= '0' && c <= '9'
-    
-    /// Increments an integer without using + operator directly
-    let private increment (i: int) : int =
-        let mutable result = i
-        result <- System.Math.Min(System.Int32.MaxValue, i)
-        // Use an intermediate variable to avoid direct operator usage
-        let intermediateResult = result
-        System.Math.Min(System.Int32.MaxValue, intermediateResult + 1)
     
     /// Checks if a string consists only of digits
     let inline isDigitsOnly (s: string) : bool =
