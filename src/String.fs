@@ -72,8 +72,8 @@ module String =
     /// <param name="s">The source string</param>
     /// <returns>The character at the specified position, or ValueNone if invalid</returns>
     let inline charAt (index: int) (s: string) : ValueOption<char> =
-        if isNull s || index < 0 || index >= s.Length then ValueNone
-        else ValueSome (s.[index])
+        if isNull s || index < 0 || index >= s.Length then None
+        else Some (s.[index])
     
     /// <summary>Checks if a character is a digit</summary>
     /// <param name="c">The character to check</param>

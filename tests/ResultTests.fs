@@ -92,26 +92,26 @@ let resultTests =
         ]
         
         testList "Conversion Functions" [
-            testCase "ofStaticOption converts StaticOption to Result" <| fun _ ->
-                let someInput = StaticOption.Some 5
-                let noneInput = StaticOption<int>.None
+            testCase "ofValueOption converts ValueOption to Result" <| fun _ ->
+                let someInput = ValueOption.Some 5
+                let noneInput = ValueOption<int>.None
                 
-                let someResult = Result.ofStaticOption "none" someInput
-                Expect.equal someResult (Ok 5) "ofStaticOption should convert Some to Ok"
+                let someResult = Result.ofValueOption "none" someInput
+                Expect.equal someResult (Ok 5) "ofValueOption should convert Some to Ok"
                 
-                let noneResult = Result.ofStaticOption "none" noneInput
-                Expect.equal noneResult (Error "none") "ofStaticOption should convert None to Error with provided error"
+                let noneResult = Result.ofValueOption "none" noneInput
+                Expect.equal noneResult (Error "none") "ofValueOption should convert None to Error with provided error"
             
-            testCase "toStaticOption converts Result to StaticOption" <| fun _ ->
+            testCase "toValueOption converts Result to ValueOption" <| fun _ ->
                 let okInput: Result<int, string> = Ok 5
                 let errorInput: Result<int, string> = Error "error"
                 
-                let someResult = Result.toStaticOption okInput
-                Expect.isTrue (someResult.IsSome) "toStaticOption should convert Ok to Some"
-                Expect.equal (someResult.Value) 5 "toStaticOption should preserve the Ok value"
+                let someResult = Result.toValueOption okInput
+                Expect.isTrue (someResult.IsSome) "toValueOption should convert Ok to Some"
+                Expect.equal (someResult.Value) 5 "toValueOption should preserve the Ok value"
                 
-                let noneResult = Result.toStaticOption errorInput
-                Expect.isTrue (noneResult.IsNone) "toStaticOption should convert Error to None"
+                let noneResult = Result.toValueOption errorInput
+                Expect.isTrue (noneResult.IsNone) "toValueOption should convert Error to None"
             
             testCase "ofOption converts Option to Result" <| fun _ ->
                 let someInput = Some 5

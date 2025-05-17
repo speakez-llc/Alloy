@@ -13,7 +13,7 @@
     <Compile Include="ResultTests.fs" />
     <Compile Include="SpanTests.fs" />
     <Compile Include="StringTests.fs" />
-    <Compile Include="StaticOptionTests.fs" />
+    <Compile Include="ValueOptionTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

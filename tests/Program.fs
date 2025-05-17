@@ -12,7 +12,7 @@ let allTests =
         ResultTests.tests
         SpanTests.tests
         StringTests.tests
-        StaticOptionTests.tests
+        ValueOptionTests.tests
     ]
 
 // Entry point with correct Tests module reference

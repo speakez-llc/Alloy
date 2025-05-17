@@ -25,15 +25,15 @@ Alloy extends fsil's core functionality with additional operations:
 | `iter`, `iteri` | `min`, `max`, `sum`, `average` |
 | `fold` | `filter`, `choose`, `find`, `tryFind` |
 | `zero`, `one` | `equals`, `not_equals`, `default_value` |
-| `is_some`, `value` | `StaticOption<T>` struct type |
+| `is_some`, `value` | `ValueOption<T>` struct type |
 | Basic printing | String manipulation functions |
 | | Result handling functions |
 
-## StaticOption: Zero-Allocation Option Type
+## ValueOption: Zero-Allocation Option Type
 
-Alloy provides a zero-allocation option type called `StaticOption<'T>` that serves as a high-performance alternative to F#'s built-in `Option<'T>`. This implementation is crucial for performance-critical scenarios where every allocation matters.
+Alloy provides a zero-allocation option type called `ValueOption<'T>` that serves as a high-performance alternative to F#'s built-in `Option<'T>`. This implementation is crucial for performance-critical scenarios where every allocation matters.
 
-### Why StaticOption?
+### Why ValueOption?
 
 Standard F# options are reference types that allocate memory on the managed heap, which can lead to:
 - Increased garbage collection (GC) pressure
@@ -41,16 +41,16 @@ Standard F# options are reference types that allocate memory on the managed heap
 - Cache misses due to pointer indirection
 - Performance degradation in tight loops or high-frequency code paths
 
-StaticOption solves these problems by using a struct-based implementation that stays on the stack, eliminating heap allocations entirely while maintaining F#'s familiar option semantics.
+ValueOption solves these problems by using a struct-based implementation that stays on the stack, eliminating heap allocations entirely while maintaining F#'s familiar option semantics.
 
-### Using StaticOption
+### Using ValueOption
 
 ```fsharp
 open Alloy
 
 // Creating option values
-let someValue = StaticOption.Some 42
-let noneValue = StaticOption<int>.None
+let someValue = ValueOption.Some 42
+let noneValue = ValueOption<int>.None
 
 // Checking for values using properties
 if someValue.IsSome then
@@ -59,21 +59,21 @@ if someValue.IsSome then
 // Using module functions (similar to F#'s Option module)
 let doubled = 
     someValue 
-    |> StaticOption.map (fun x -> x * 2)
-    |> StaticOption.defaultValue 0
+    |> ValueOption.map (fun x -> x * 2)
+    |> ValueOption.defaultValue 0
 
 // Converting between static options and standard F# options
-let standardOption = StaticOption.toOption someValue
-let backToStatic = StaticOption.ofOption (Some 42)
+let standardOption = ValueOption.toOption someValue
+let backToStatic = ValueOption.ofOption (Some 42)
 ```
 
-### How StaticOption Works
+### How ValueOption Works
 
-Under the hood, StaticOption uses a struct record with carefully designed properties:
+Under the hood, ValueOption uses a struct record with carefully designed properties:
 
 ```fsharp
 [<Struct>]
-type StaticOption<'T> =
+type ValueOption<'T> =
     private { 
         hasValue: bool
         value: 'T 
@@ -87,14 +87,14 @@ type StaticOption<'T> =
 
 ### Performance Considerations
 
-StaticOption provides significant performance benefits in these scenarios:
+ValueOption provides significant performance benefits in these scenarios:
 
 - **High-frequency option creation**: In tight loops creating many options
 - **Computation-heavy algorithms**: When processing large datasets with optional values
 - **Memory-constrained environments**: In systems with limited memory or strict GC requirements
 - **Real-time applications**: Where predictable, low-latency execution is critical
 
-As a rule of thumb, prefer StaticOption when you have:
+As a rule of thumb, prefer ValueOption when you have:
 - Options in performance-critical code paths
 - Collection processing with many optional values
 - High-frequency option creation/manipulation
@@ -104,21 +104,21 @@ For code where performance is less critical, standard F# options might be more e
 
 ### Integration with Result Type
 
-StaticOption integrates seamlessly with Alloy's Result type:
+ValueOption integrates seamlessly with Alloy's Result type:
 
 ```fsharp
-// Convert StaticOption to Result
-let result = Result.ofStaticOption "Value missing" someValue
+// Convert ValueOption to Result
+let result = Result.ofValueOption "Value missing" someValue
 
-// Convert Result back to StaticOption
-let option = Result.toStaticOption result
+// Convert Result back to ValueOption
+let option = Result.toValueOption result
 ```
 
 This enables efficient, allocation-free error handling chains.
 
 ### Behind the Scenes: Static Resolution
 
-The "static" in StaticOption refers to statically resolved type parameters (SRTPs), an F# feature that enables compile-time resolution of generic operations. This means that operations on StaticOption types have:
+The "static" in ValueOption refers to statically resolved type parameters (SRTPs), an F# feature that enables compile-time resolution of generic operations. This means that operations on ValueOption types have:
 
 1. **Zero virtual method calls**: All method resolution happens at compile time
 2. **Potential for inlining**: The compiler can optimize operations by inlining them
@@ -151,8 +151,8 @@ let evens = filter (fun x -> x % 2 = 0) numbers // [|2; 4|]
 let total = sum numbers    // 15
 let avg = average numbers  // 3
 
-// StaticOption type - zero allocation option type
-let maybeValue = StaticOption.Some 42
+// ValueOption type - zero allocation option type
+let maybeValue = ValueOption.Some 42
 let hasValue = maybeValue.IsSome  // true
 let value = maybeValue.Value      // 42
 
@@ -234,19 +234,19 @@ let result = numbers
 - `=` - Equality
 - `<>` - Inequality
 
-### StaticOption
+### ValueOption
 A struct-based option type for zero-allocation operations:
-- `StaticOption.Some value` - Creates a Some value
-- `StaticOption<'T>.None` - Creates a None value
+- `ValueOption.Some value` - Creates a Some value
+- `ValueOption<'T>.None` - Creates a None value
 - `option.IsSome` - Checks if the option has a value
 - `option.IsNone` - Checks if the option is None
 - `option.Value` - Gets the value (throws if None)
-- `StaticOption.map f opt` - Transforms the value if Some
-- `StaticOption.bind f opt` - Applies a function that returns an option
-- `StaticOption.defaultValue d opt` - Returns the value or default
-- `StaticOption.defaultWith f opt` - Returns the value or applies a function
-- `StaticOption.ofOption opt` - Converts from a standard F# option
-- `StaticOption.toOption opt` - Converts to a standard F# option
+- `ValueOption.map f opt` - Transforms the value if Some
+- `ValueOption.bind f opt` - Applies a function that returns an option
+- `ValueOption.defaultValue d opt` - Returns the value or default
+- `ValueOption.defaultWith f opt` - Returns the value or applies a function
+- `ValueOption.ofOption opt` - Converts from a standard F# option
+- `ValueOption.toOption opt` - Converts to a standard F# option
 
 ### String Operations
 - `String.length s` - Gets the length of a string

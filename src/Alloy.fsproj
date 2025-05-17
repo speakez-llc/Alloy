@@ -9,7 +9,7 @@
     <Compile Include="Numerics.fs" />
     <Compile Include="Span.fs" />
     <Compile Include="Operators.fs" />
-    <Compile Include="StaticOption.fs" />
+    <Compile Include="ValueOption.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="String.fs" />
     <Compile Include="AutoOpen.fs" />

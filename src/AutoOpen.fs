@@ -7,7 +7,7 @@ open Alloy.Numerics
 open Alloy.Operators
 open Alloy.Span
 open Alloy.String
-open Alloy.StaticOption
+open Alloy.ValueOption
 open Alloy.Result
 
 // You can also add any additional exports here
