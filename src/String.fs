@@ -9,6 +9,91 @@ open Alloy.Numerics
 module String =
     [<Literal>]
     let private INT_MAX_VALUE = 2147483647
+
+    /// <summary>Helper function to parse digits</summary>
+    /// <param name="c">The character to parse</param>
+    /// <returns>Some digit if the character is a digit, None otherwise</returns>
+    let inline private parseDigit (c: char) : int option =
+        if c >= '0' && c <= '9' then Some(int c - int '0')
+        else None
+
+    /// <summary>Safely increment an integer</summary>
+    /// <param name="i">The integer to increment</param>
+    /// <returns>The incremented value, or the same value if it is the maximum integer</returns>
+    let inline private increment (i: int) : int =
+        if i = INT_MAX_VALUE then i
+        else add i 1
+
+    /// <summary>Gets a value indicating whether the string is a valid number</summary>
+    /// <param name="s">The string to check</param>
+    /// <returns>True if the string is a valid number</returns>
+    let inline isNumber (s: string) : bool =
+        if isNull s || s.Length = 0 then false
+        else
+            let mutable valid = true
+            let mutable i = if s.[0] = '-' || s.[0] = '+' then 1 else 0
+            let mutable hasDecimal = false
+            
+            if i = s.Length then false
+            else
+                while i < s.Length && valid do
+                    if s.[i] = '.' && not hasDecimal then
+                        hasDecimal <- true
+                        i <- increment i
+                    else
+                        match parseDigit s.[i] with
+                        | Some _ -> i <- increment i
+                        | None -> valid <- false
+                        
+                valid && (if hasDecimal then i > (if s.[0] = '-' || s.[0] = '+' then 2 else 1) else i > (if s.[0] = '-' || s.[0] = '+' then 1 else 0))
+    
+    /// <summary>Concatenates two strings, ensuring neither is null</summary>
+    /// <param name="s1">The first string</param>
+    /// <param name="s2">The second string</param>
+    /// <returns>The concatenated string</returns>
+    let inline concat (s1: string) (s2: string) : string =
+        let s1Safe = if isNull s1 then "" else s1
+        let s2Safe = if isNull s2 then "" else s2
+        
+        let len1 = s1Safe.Length
+        let len2 = s2Safe.Length
+        let result = Array.zeroCreate<char> (add len1 len2)
+        
+        for i = 0 to len1 - 1 do
+            result.[i] <- s1Safe.[i]
+        
+        for i = 0 to len2 - 1 do
+            result.[add i len1] <- s2Safe.[i]
+            
+        new string(result)
+    
+    /// <summary>Safely gets the character at the specified position</summary>
+    /// <param name="index">The index of the character to get</param>
+    /// <param name="s">The source string</param>
+    /// <returns>The character at the specified position, or ValueNone if invalid</returns>
+    let inline charAt (index: int) (s: string) : ValueOption<char> =
+        if isNull s || index < 0 || index >= s.Length then ValueNone
+        else ValueSome (s.[index])
+    
+    /// <summary>Checks if a character is a digit</summary>
+    /// <param name="c">The character to check</param>
+    /// <returns>True if the character is a digit</returns>
+    let inline isDigit (c: char) : bool =
+        c >= '0' && c <= '9'
+    
+    /// <summary>Checks if a string consists only of digits</summary>
+    /// <param name="s">The string to check</param>
+    /// <returns>True if the string consists only of digits</returns>
+    let inline isDigitsOnly (s: string) : bool =
+        if isNull s || s.Length = 0 then false
+        else
+            let mutable allDigits = true
+            let mutable i = 0
+            while i < s.Length && allDigits do
+                if not (isDigit s.[i]) then
+                    allDigits <- false
+                i <- increment i
+            allDigits
     
     /// <summary>Returns the length of a string</summary>
     /// <param name="s">The input string</param>
@@ -48,12 +133,7 @@ module String =
                 i <- add i 1
             onlyWhitespace
     
-    /// <summary>Safely increment an integer</summary>
-    /// <param name="i">The integer to increment</param>
-    /// <returns>The incremented value, or the same value if it is the maximum integer</returns>
-    let inline private increment (i: int) : int =
-        if i = INT_MAX_VALUE then i
-        else add i 1
+
     
     /// <summary>Calculates how many characters are available from a starting position</summary>
     /// <param name="s">The source string</param>
@@ -445,12 +525,7 @@ module String =
                     equal <- false
             equal
     
-    /// <summary>Helper function to parse digits</summary>
-    /// <param name="c">The character to parse</param>
-    /// <returns>Some digit if the character is a digit, None otherwise</returns>
-    let inline private parseDigit (c: char) : int option =
-        if c >= '0' && c <= '9' then Some(int c - int '0')
-        else None
+
     
     /// <summary>Gets a value indicating whether the string is a valid integer</summary>
     /// <param name="s">The string to check</param>
@@ -469,74 +544,3 @@ module String =
                     | None -> valid <- false
                         
                 valid
-    
-    /// <summary>Gets a value indicating whether the string is a valid number</summary>
-    /// <param name="s">The string to check</param>
-    /// <returns>True if the string is a valid number</returns>
-    let inline isNumber (s: string) : bool =
-        if isNull s || s.Length = 0 then false
-        else
-            let mutable valid = true
-            let mutable i = if s.[0] = '-' || s.[0] = '+' then 1 else 0
-            let mutable hasDecimal = false
-            
-            if i = s.Length then false
-            else
-                while i < s.Length && valid do
-                    if s.[i] = '.' && not hasDecimal then
-                        hasDecimal <- true
-                        i <- increment i
-                    else
-                        match parseDigit s.[i] with
-                        | Some _ -> i <- increment i
-                        | None -> valid <- false
-                        
-                valid && (if hasDecimal then i > (if s.[0] = '-' || s.[0] = '+' then 2 else 1) else i > (if s.[0] = '-' || s.[0] = '+' then 1 else 0))
-    
-    /// <summary>Concatenates two strings, ensuring neither is null</summary>
-    /// <param name="s1">The first string</param>
-    /// <param name="s2">The second string</param>
-    /// <returns>The concatenated string</returns>
-    let inline concat (s1: string) (s2: string) : string =
-        let s1Safe = if isNull s1 then "" else s1
-        let s2Safe = if isNull s2 then "" else s2
-        
-        let len1 = s1Safe.Length
-        let len2 = s2Safe.Length
-        let result = Array.zeroCreate<char> (add len1 len2)
-        
-        for i = 0 to len1 - 1 do
-            result.[i] <- s1Safe.[i]
-        
-        for i = 0 to len2 - 1 do
-            result.[add i len1] <- s2Safe.[i]
-            
-        new string(result)
-    
-    /// <summary>Safely gets the character at the specified position</summary>
-    /// <param name="index">The index of the character to get</param>
-    /// <param name="s">The source string</param>
-    /// <returns>The character at the specified position, or ValueNone if invalid</returns>
-    let inline charAt (index: int) (s: string) : ValueOption<char> =
-        if isNull s || index < 0 || index >= s.Length then ValueNone
-        else ValueSome (s.[index])
-    
-    /// <summary>Checks if a character is a digit</summary>
-    /// <param name="c">The character to check</param>
-    /// <returns>True if the character is a digit</returns>
-    let inline isDigit (c: char) : bool =
-        c >= '0' && c <= '9'
-    
-    /// <summary>Checks if a string consists only of digits</summary>
-    /// <param name="s">The string to check</param>
-    /// <returns>True if the string consists only of digits</returns>
-    let inline isDigitsOnly (s: string) : bool =
-        if isNull s || s.Length = 0 then false
-        else
-            let mutable allDigits = true
-            let mutable i = 0
-            while i < s.Length && allDigits do
-                if not (isDigit s.[i]) then
-                    allDigits <- false
-                i <- increment i
-            allDigits

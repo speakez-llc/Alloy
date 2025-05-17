@@ -3,8 +3,11 @@ module Alloy.Numerics
 open Alloy.Core
 
 module Internal =
+    // Basic numeric operations for primitive types
+    
     [<AbstractClass; Sealed>]
-    type Add =
+    type BasicOps =
+        // Add implementations
         static member inline Add(a: int, b: int) = a + b
         static member inline Add(a: float, b: float) = a + b
         static member inline Add(a: int64, b: int64) = a + b
@@ -25,19 +28,8 @@ module Internal =
             for i = 0 to bChars.Length - 1 do
                 result.[i + aChars.Length] <- bChars.[i]
             new string(result)
-        
-        static member inline Add<[<Measure>] 'u>(a: int<'u>, b: int<'u>) = a + b
-        static member inline Add<[<Measure>] 'u>(a: float<'u>, b: float<'u>) = a + b
-        static member inline Add<[<Measure>] 'u>(a: int64<'u>, b: int64<'u>) = a + b
-        static member inline Add<[<Measure>] 'u>(a: uint64<'u>, b: uint64<'u>) = a + b
-        static member inline Add<[<Measure>] 'u>(a: float32<'u>, b: float32<'u>) = a + b
-        static member inline Add<[<Measure>] 'u>(a: decimal<'u>, b: decimal<'u>) = a + b
-        
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            ((^T or Add) : (static member Add: ^T * ^T -> ^T) (a, b))
-    
-    [<AbstractClass; Sealed>]
-    type Subtract =
+            
+        // Subtract implementations
         static member inline Subtract(a: int, b: int) = a - b
         static member inline Subtract(a: float, b: float) = a - b
         static member inline Subtract(a: int64, b: int64) = a - b
@@ -49,19 +41,7 @@ module Internal =
         static member inline Subtract(a: int16, b: int16) = a - b
         static member inline Subtract(a: uint16, b: uint16) = a - b
         
-        static member inline Subtract<[<Measure>] 'u>(a: int<'u>, b: int<'u>) = a - b
-        static member inline Subtract<[<Measure>] 'u>(a: float<'u>, b: float<'u>) = a - b
-        static member inline Subtract<[<Measure>] 'u>(a: int64<'u>, b: int64<'u>) = a - b
-        static member inline Subtract<[<Measure>] 'u>(a: uint64<'u>, b: uint64<'u>) = a - b
-        static member inline Subtract<[<Measure>] 'u>(a: float32<'u>, b: float32<'u>) = a - b
-        static member inline Subtract<[<Measure>] 'u>(a: decimal<'u>, b: decimal<'u>) = a - b
-        
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            ((^T or Subtract) : (static member Subtract: ^T * ^T -> ^T) (a, b))
-    
-    [<AbstractClass; Sealed>]
-    type Multiply =
-        // Basic numeric type implementations
+        // Multiply implementations
         static member inline Multiply(a: int, b: int) = a * b
         static member inline Multiply(a: float, b: float) = a * b
         static member inline Multiply(a: int64, b: int64) = a * b
@@ -73,29 +53,7 @@ module Internal =
         static member inline Multiply(a: int16, b: int16) = a * b
         static member inline Multiply(a: uint16, b: uint16) = a * b
         
-        // Unit * scalar implementations
-        static member inline Multiply<[<Measure>] 'u>(a: int<'u>, b: int) = a * b
-        static member inline Multiply<[<Measure>] 'u>(a: float<'u>, b: float) = a * b
-        static member inline Multiply<[<Measure>] 'u>(a: int64<'u>, b: int64) = a * b
-        static member inline Multiply<[<Measure>] 'u>(a: uint64<'u>, b: uint64) = a * b
-        static member inline Multiply<[<Measure>] 'u>(a: float32<'u>, b: float32) = a * b
-        static member inline Multiply<[<Measure>] 'u>(a: decimal<'u>, b: decimal) = a * b
-
-        
-        // Unit1 * unit2 implementations
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: int<'u1>, b: int<'u2>) = a * b
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: float<'u1>, b: float<'u2>) = a * b
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: int64<'u1>, b: int64<'u2>) = a * b
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: uint64<'u1>, b: uint64<'u2>) = a * b
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: float32<'u1>, b: float32<'u2>) = a * b
-        static member inline Multiply<[<Measure>] 'u1, [<Measure>] 'u2>(a: decimal<'u1>, b: decimal<'u2>) = a * b
-        
-        static member inline Invoke (a: ^T) (b: ^U) : ^V =
-            ((^T or ^U or ^V) : (static member Multiply: ^T * ^U -> ^V) (a, b))
-    
-    [<AbstractClass; Sealed>]
-    type Divide =
-        // Basic numeric type implementations
+        // Divide implementations
         static member inline Divide(a: int, b: int) = a / b
         static member inline Divide(a: float, b: float) = a / b
         static member inline Divide(a: int64, b: int64) = a / b
@@ -106,29 +64,67 @@ module Internal =
         static member inline Divide(a: uint32, b: uint32) = a / b
         static member inline Divide(a: int16, b: int16) = a / b
         static member inline Divide(a: uint16, b: uint16) = a / b
-        
-        // Unit / scalar implementations
-        static member inline Divide<[<Measure>] 'u>(a: int<'u>, b: int) = a / b
-        static member inline Divide<[<Measure>] 'u>(a: float<'u>, b: float) = a / b
-        static member inline Divide<[<Measure>] 'u>(a: int64<'u>, b: int64) = a / b
-        static member inline Divide<[<Measure>] 'u>(a: uint64<'u>, b: uint64) = a / b
-        static member inline Divide<[<Measure>] 'u>(a: float32<'u>, b: float32) = a / b
-        static member inline Divide<[<Measure>] 'u>(a: decimal<'u>, b: decimal) = a / b
-        
-        
-        // Unit1 / unit2 implementations
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: int<'u1>, b: int<'u2>) = a / b
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: float<'u1>, b: float<'u2>) = a / b
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: int64<'u1>, b: int64<'u2>) = a / b
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: uint64<'u1>, b: uint64<'u2>) = a / b
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: float32<'u1>, b: float32<'u2>) = a / b
-        static member inline Divide<[<Measure>] 'u1, [<Measure>] 'u2>(a: decimal<'u1>, b: decimal<'u2>) = a / b
-        
-        static member inline Invoke (a: ^T) (b: ^U) : ^V =
-            ((^T or ^U or ^V) : (static member Divide: ^T * ^U -> ^V) (a, b))
+    
+    // Operations for unit-of-measure types - single measure
     
     [<AbstractClass; Sealed>]
-    type Sum =
+    type MeasureOps =
+        // Add implementations for unit-of-measure types
+        static member inline AddInt(a: int<'u>, b: int<'u>) = a + b
+        static member inline AddFloat(a: float<'u>, b: float<'u>) = a + b
+        static member inline AddInt64(a: int64<'u>, b: int64<'u>) = a + b
+        static member inline AddUInt64(a: uint64<'u>, b: uint64<'u>) = a + b
+        static member inline AddFloat32(a: float32<'u>, b: float32<'u>) = a + b
+        static member inline AddDecimal(a: decimal<'u>, b: decimal<'u>) = a + b
+        
+        // Subtract implementations for unit-of-measure types
+        static member inline SubtractInt(a: int<'u>, b: int<'u>) = a - b
+        static member inline SubtractFloat(a: float<'u>, b: float<'u>) = a - b
+        static member inline SubtractInt64(a: int64<'u>, b: int64<'u>) = a - b
+        static member inline SubtractUInt64(a: uint64<'u>, b: uint64<'u>) = a - b
+        static member inline SubtractFloat32(a: float32<'u>, b: float32<'u>) = a - b
+        static member inline SubtractDecimal(a: decimal<'u>, b: decimal<'u>) = a - b
+        
+        // Multiply scalar implementations for unit-of-measure types
+        static member inline MultiplyIntScalar(a: int<'u>, b: int) = a * b
+        static member inline MultiplyFloatScalar(a: float<'u>, b: float) = a * b
+        static member inline MultiplyInt64Scalar(a: int64<'u>, b: int64) = a * b
+        static member inline MultiplyUInt64Scalar(a: uint64<'u>, b: uint64) = a * b
+        static member inline MultiplyFloat32Scalar(a: float32<'u>, b: float32) = a * b
+        static member inline MultiplyDecimalScalar(a: decimal<'u>, b: decimal) = a * b
+        
+        // Divide scalar implementations for unit-of-measure types
+        static member inline DivideIntScalar(a: int<'u>, b: int) = a / b
+        static member inline DivideFloatScalar(a: float<'u>, b: float) = a / b
+        static member inline DivideInt64Scalar(a: int64<'u>, b: int64) = a / b
+        static member inline DivideUInt64Scalar(a: uint64<'u>, b: uint64) = a / b
+        static member inline DivideFloat32Scalar(a: float32<'u>, b: float32) = a / b
+        static member inline DivideDecimalScalar(a: decimal<'u>, b: decimal) = a / b
+    
+    // Operations for unit-of-measure types - different measures
+    
+    [<AbstractClass; Sealed>]
+    type MeasureMeasureOps =
+        // Multiply implementations for different unit-of-measure types
+        static member inline MultiplyIntUnits(a: int<'u1>, b: int<'u2>) = a * b
+        static member inline MultiplyFloatUnits(a: float<'u1>, b: float<'u2>) = a * b
+        static member inline MultiplyInt64Units(a: int64<'u1>, b: int64<'u2>) = a * b
+        static member inline MultiplyUInt64Units(a: uint64<'u1>, b: uint64<'u2>) = a * b
+        static member inline MultiplyFloat32Units(a: float32<'u1>, b: float32<'u2>) = a * b
+        static member inline MultiplyDecimalUnits(a: decimal<'u1>, b: decimal<'u2>) = a * b
+        
+        // Divide implementations for different unit-of-measure types
+        static member inline DivideIntUnits(a: int<'u1>, b: int<'u2>) = a / b
+        static member inline DivideFloatUnits(a: float<'u1>, b: float<'u2>) = a / b
+        static member inline DivideInt64Units(a: int64<'u1>, b: int64<'u2>) = a / b
+        static member inline DivideUInt64Units(a: uint64<'u1>, b: uint64<'u2>) = a / b
+        static member inline DivideFloat32Units(a: float32<'u1>, b: float32<'u2>) = a / b
+        static member inline DivideDecimalUnits(a: decimal<'u1>, b: decimal<'u2>) = a / b
+    
+    // Collection operations for arrays of primitive types
+    
+    [<AbstractClass; Sealed>]
+    type ArrayOps =
         static member inline Sum(xs: int[]) = 
             let mutable sum = 0
             for i = 0 to xs.Length - 1 do sum <- sum + xs.[i]
@@ -174,46 +170,6 @@ module Internal =
             for i = 0 to xs.Length - 1 do sum <- sum + xs.[i]
             sum
             
-        static member inline Sum<[<Measure>] 'u>(xs: int<'u>[]) = 
-            if xs.Length = 0 then LanguagePrimitives.GenericZero<int<'u>>
-            else
-                let mutable sum = xs.[0]
-                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
-                sum
-            
-        static member inline Sum<[<Measure>] 'u>(xs: float<'u>[]) = 
-            if xs.Length = 0 then LanguagePrimitives.GenericZero<float<'u>>
-            else
-                let mutable sum = xs.[0]
-                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
-                sum
-            
-        static member inline Sum<[<Measure>] 'u>(xs: int64<'u>[]) = 
-            if xs.Length = 0 then LanguagePrimitives.GenericZero<int64<'u>>
-            else
-                let mutable sum = xs.[0]
-                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
-                sum
-            
-        static member inline Sum<[<Measure>] 'u>(xs: float32<'u>[]) = 
-            if xs.Length = 0 then LanguagePrimitives.GenericZero<float32<'u>>
-            else
-                let mutable sum = xs.[0]
-                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
-                sum
-                
-        static member inline Sum<[<Measure>] 'u>(xs: decimal<'u>[]) = 
-            if xs.Length = 0 then LanguagePrimitives.GenericZero<decimal<'u>>
-            else
-                let mutable sum = xs.[0]
-                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
-                sum
-        
-        static member inline Invoke (collection: ^Collection) : ^T =
-            ((^Collection or ^T) : (static member Sum: ^Collection -> ^T) collection)
-    
-    [<AbstractClass; Sealed>]
-    type Average =
         static member inline Average(xs: int[]) = 
             if xs.Length = 0 then 0
             else
@@ -276,45 +232,83 @@ module Internal =
                 let mutable sum = 0us
                 for i = 0 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / uint16 xs.Length
+    
+    // Collection operations for arrays of unit-of-measure types
+    
+    [<AbstractClass; Sealed>]
+    type MeasureArrayOps =
+        static member inline SumInt(xs: int<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericZero<int<'u>>
+            else
+                let mutable sum = xs.[0]
+                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
+                sum
+            
+        static member inline SumFloat(xs: float<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericZero<float<'u>>
+            else
+                let mutable sum = xs.[0]
+                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
+                sum
+            
+        static member inline SumInt64(xs: int64<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericZero<int64<'u>>
+            else
+                let mutable sum = xs.[0]
+                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
+                sum
+            
+        static member inline SumFloat32(xs: float32<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericZero<float32<'u>>
+            else
+                let mutable sum = xs.[0]
+                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
+                sum
                 
-        static member inline Average<[<Measure>] 'u>(xs: int<'u>[]) = 
+        static member inline SumDecimal(xs: decimal<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericZero<decimal<'u>>
+            else
+                let mutable sum = xs.[0]
+                for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
+                sum
+                
+        static member inline AverageInt(xs: int<'u>[]) = 
             if xs.Length = 0 then LanguagePrimitives.GenericZero<int<'u>>
             else
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / xs.Length
                 
-        static member inline Average<[<Measure>] 'u>(xs: float<'u>[]) = 
+        static member inline AverageFloat(xs: float<'u>[]) = 
             if xs.Length = 0 then LanguagePrimitives.GenericZero<float<'u>>
             else
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / float xs.Length
                 
-        static member inline Average<[<Measure>] 'u>(xs: int64<'u>[]) = 
+        static member inline AverageInt64(xs: int64<'u>[]) = 
             if xs.Length = 0 then LanguagePrimitives.GenericZero<int64<'u>>
             else
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / int64 xs.Length
                 
-        static member inline Average<[<Measure>] 'u>(xs: float32<'u>[]) = 
+        static member inline AverageFloat32(xs: float32<'u>[]) = 
             if xs.Length = 0 then LanguagePrimitives.GenericZero<float32<'u>>
             else
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / float32 xs.Length
                 
-        static member inline Average<[<Measure>] 'u>(xs: decimal<'u>[]) = 
+        static member inline AverageDecimal(xs: decimal<'u>[]) = 
             if xs.Length = 0 then LanguagePrimitives.GenericZero<decimal<'u>>
             else
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / decimal xs.Length
-        
-        static member inline Invoke (collection: ^Collection) : ^T =
-            ((^Collection or ^T) : (static member Average: ^Collection -> ^T) collection)
-
+    
+    // Min/Max operations for primitive types
+    
     module MinMaxOperations =
         [<AbstractClass; Sealed>]
         type MinImpl =
@@ -328,13 +322,6 @@ module Internal =
             static member Min(a: uint32, b: uint32) : uint32 = if a < b then a else b
             static member Min(a: int16, b: int16) : int16 = if a < b then a else b
             static member Min(a: uint16, b: uint16) : uint16 = if a < b then a else b
-            
-            static member Min<[<Measure>] 'u>(a: int<'u>, b: int<'u>) : int<'u> = if a < b then a else b
-            static member Min<[<Measure>] 'u>(a: float<'u>, b: float<'u>) : float<'u> = if a < b then a else b
-            static member Min<[<Measure>] 'u>(a: int64<'u>, b: int64<'u>) : int64<'u> = if a < b then a else b
-            static member Min<[<Measure>] 'u>(a: uint64<'u>, b: uint64<'u>) : uint64<'u> = if a < b then a else b
-            static member Min<[<Measure>] 'u>(a: float32<'u>, b: float32<'u>) : float32<'u> = if a < b then a else b
-            static member Min<[<Measure>] 'u>(a: decimal<'u>, b: decimal<'u>) : decimal<'u> = if a < b then a else b
         
         [<AbstractClass; Sealed>]
         type MaxImpl =
@@ -348,13 +335,62 @@ module Internal =
             static member Max(a: uint32, b: uint32) : uint32 = if a > b then a else b
             static member Max(a: int16, b: int16) : int16 = if a > b then a else b
             static member Max(a: uint16, b: uint16) : uint16 = if a > b then a else b
-            
-            static member Max<[<Measure>] 'u>(a: int<'u>, b: int<'u>) : int<'u> = if a > b then a else b
-            static member Max<[<Measure>] 'u>(a: float<'u>, b: float<'u>) : float<'u> = if a > b then a else b
-            static member Max<[<Measure>] 'u>(a: int64<'u>, b: int64<'u>) : int64<'u> = if a > b then a else b
-            static member Max<[<Measure>] 'u>(a: uint64<'u>, b: uint64<'u>) : uint64<'u> = if a > b then a else b
-            static member Max<[<Measure>] 'u>(a: float32<'u>, b: float32<'u>) : float32<'u> = if a > b then a else b
-            static member Max<[<Measure>] 'u>(a: decimal<'u>, b: decimal<'u>) : decimal<'u> = if a > b then a else b
+        
+        // Min/Max operations for unit-of-measure types
+        
+        [<AbstractClass; Sealed>]
+        type MeasureMinImpl =
+            static member MinInt(a: int<'u>, b: int<'u>) : int<'u> = if a < b then a else b
+            static member MinFloat(a: float<'u>, b: float<'u>) : float<'u> = if a < b then a else b
+            static member MinInt64(a: int64<'u>, b: int64<'u>) : int64<'u> = if a < b then a else b
+            static member MinUInt64(a: uint64<'u>, b: uint64<'u>) : uint64<'u> = if a < b then a else b
+            static member MinFloat32(a: float32<'u>, b: float32<'u>) : float32<'u> = if a < b then a else b
+            static member MinDecimal(a: decimal<'u>, b: decimal<'u>) : decimal<'u> = if a < b then a else b
+        
+        [<AbstractClass; Sealed>]
+        type MeasureMaxImpl =
+            static member MaxInt(a: int<'u>, b: int<'u>) : int<'u> = if a > b then a else b
+            static member MaxFloat(a: float<'u>, b: float<'u>) : float<'u> = if a > b then a else b
+            static member MaxInt64(a: int64<'u>, b: int64<'u>) : int64<'u> = if a > b then a else b
+            static member MaxUInt64(a: uint64<'u>, b: uint64<'u>) : uint64<'u> = if a > b then a else b
+            static member MaxFloat32(a: float32<'u>, b: float32<'u>) : float32<'u> = if a > b then a else b
+            static member MaxDecimal(a: decimal<'u>, b: decimal<'u>) : decimal<'u> = if a > b then a else b
+    
+    // Main type interfaces for public operators
+    
+    [<AbstractClass; Sealed>]
+    type Add =
+        static member inline Invoke (a: ^T) (b: ^T) : ^T =
+            ((^T or BasicOps or MeasureOps) : (static member Add: ^T * ^T -> ^T) (a, b))
+    
+    [<AbstractClass; Sealed>]
+    type Subtract =
+        static member inline Invoke (a: ^T) (b: ^T) : ^T =
+            ((^T or BasicOps or MeasureOps) : (static member Subtract: ^T * ^T -> ^T) (a, b))
+    
+    [<AbstractClass; Sealed>]
+    type Multiply =
+        static member inline Invoke (a: ^T) (b: ^U) : ^V =
+            ((^T or ^U or ^V or BasicOps or MeasureOps or MeasureMeasureOps) : 
+                (static member Multiply: ^T * ^U -> ^V) (a, b))
+    
+    [<AbstractClass; Sealed>]
+    type Divide =
+        static member inline Invoke (a: ^T) (b: ^U) : ^V =
+            ((^T or ^U or ^V or BasicOps or MeasureOps or MeasureMeasureOps) : 
+                (static member Divide: ^T * ^U -> ^V) (a, b))
+    
+    [<AbstractClass; Sealed>]
+    type Sum =
+        static member inline Invoke (collection: ^Collection) : ^T =
+            ((^Collection or ^T or ArrayOps or MeasureArrayOps) : 
+                (static member Sum: ^Collection -> ^T) collection)
+    
+    [<AbstractClass; Sealed>]
+    type Average =
+        static member inline Invoke (collection: ^Collection) : ^T =
+            ((^Collection or ^T or ArrayOps or MeasureArrayOps) : 
+                (static member Average: ^Collection -> ^T) collection)
     
     [<Measure>] type internal TestUnit
     
@@ -379,13 +415,12 @@ module Internal =
         let _ = MinMaxOperations.MaxImpl.Max(0s, 0s)
         let _ = MinMaxOperations.MinImpl.Min(0us, 0us)
         let _ = MinMaxOperations.MaxImpl.Max(0us, 0us)
-        let _ = MinMaxOperations.MinImpl.Min(LanguagePrimitives.Int32WithMeasure<TestUnit>(0), LanguagePrimitives.Int32WithMeasure<TestUnit>(0))
-        let _ = MinMaxOperations.MaxImpl.Max(LanguagePrimitives.Int32WithMeasure<TestUnit>(0), LanguagePrimitives.Int32WithMeasure<TestUnit>(0))
+        let _ = MinMaxOperations.MeasureMinImpl.MinInt(LanguagePrimitives.Int32WithMeasure<TestUnit>(0), LanguagePrimitives.Int32WithMeasure<TestUnit>(0))
+        let _ = MinMaxOperations.MeasureMaxImpl.MaxInt(LanguagePrimitives.Int32WithMeasure<TestUnit>(0), LanguagePrimitives.Int32WithMeasure<TestUnit>(0))
         ()
     
     do registerMinMaxImplementations()
 
-    // Internal unit conversion helpers - moved inside the Internal module
     let inline intWithUnitInternal<[<Measure>] 'u> (value: int) : int<'u> = 
         LanguagePrimitives.Int32WithMeasure<'u>(value)
 

@@ -3,6 +3,8 @@ module Alloy.Tests.CoreTests
 open Expecto
 open Alloy
 open Alloy.Core
+open Alloy.Operators
+open Alloy.Numerics
 open Alloy.Tests.TestHelpers
 
 /// Tests for Core module functionality
