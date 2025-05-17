@@ -2,6 +2,7 @@ namespace Alloy
 
 open Alloy.Core
 open Alloy.Numerics
+open Alloy.ValueOption
 
 /// <summary>
 /// Module containing optimized string operations with safe and efficient string manipulation
@@ -13,9 +14,9 @@ module String =
     /// <summary>Helper function to parse digits</summary>
     /// <param name="c">The character to parse</param>
     /// <returns>Some digit if the character is a digit, None otherwise</returns>
-    let inline private parseDigit (c: char) : int option =
-        if c >= '0' && c <= '9' then Some(int c - int '0')
-        else None
+    let inline private parseDigit (c: char) : ValueOption<int> =
+        if c >= '0' && c <= '9' then some(int c - int '0')
+        else none
 
     /// <summary>Safely increment an integer</summary>
     /// <param name="i">The integer to increment</param>
@@ -72,8 +73,8 @@ module String =
     /// <param name="s">The source string</param>
     /// <returns>The character at the specified position, or ValueNone if invalid</returns>
     let inline charAt (index: int) (s: string) : ValueOption<char> =
-        if isNull s || index < 0 || index >= s.Length then None
-        else Some (s.[index])
+        if isNull s || index < 0 || index >= s.Length then none<char>
+        else some s.[index]
     
     /// <summary>Checks if a character is a digit</summary>
     /// <param name="c">The character to check</param>

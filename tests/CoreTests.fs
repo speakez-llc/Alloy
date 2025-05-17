@@ -3,8 +3,7 @@ module Alloy.Tests.CoreTests
 open Expecto
 open Alloy
 open Alloy.Core
-open Alloy.Operators
-open Alloy.Numerics
+open Alloy.ValueOption
 open Alloy.Tests.TestHelpers
 
 /// Tests for Core module functionality
@@ -13,11 +12,12 @@ let coreTests =
         testList "Collection Operations" [
             testCase "map transforms collections correctly" <| fun _ ->
                 let array = [|1; 2; 3; 4; 5|]
-                let result = map (fun x -> x * 2) array
+                // Explicitly qualify the map function for arrays
+                let result = Core.map (fun x -> x * 2) array
                 expectArrayEqual result [|2; 4; 6; 8; 10|] "map should double each element"
                 
                 // Test with a different transformation
-                let result2 = map (fun x -> x * x) array
+                let result2 = Core.map (fun x -> x * x) array
                 expectArrayEqual result2 [|1; 4; 9; 16; 25|] "map should square each element"
             
             testCase "mapi transforms with index correctly" <| fun _ ->
@@ -68,20 +68,20 @@ let coreTests =
             testCase "choose applies chooser function correctly" <| fun _ ->
                 let array = [|1; 2; 3; 4; 5; 6; 7; 8; 9; 10|]
                 
-                // Choose even numbers and double them
-                let result = choose (fun x -> if x % 2 = 0 then Some (x * 2) else None) array
+                // Using standard F# options for the choose function since that's what Core.choose expects
+                let result = choose (fun x -> if x % 2 = 0 then Microsoft.FSharp.Core.Some (x * 2) else Microsoft.FSharp.Core.None) array
                 expectArrayEqual result [|4; 8; 12; 16; 20|] "choose should transform filtered elements"
                 
-                // Choose with more complex logic - fixed to match the expected output exactly
+                // Choose with more complex logic - using standard F# options
                 let complexChooser x = 
                     match x with
-                    | 1 -> Some 2     // x+1
-                    | 3 -> Some 9     // x*x
-                    | 4 -> Some 5     // x+1
-                    | 6 -> Some 36    // x*x
-                    | 7 -> Some 8     // x+1
-                    | 9 -> Some 81    // x*x
-                    | _ -> None
+                    | 1 -> Microsoft.FSharp.Core.Some 2     // x+1
+                    | 3 -> Microsoft.FSharp.Core.Some 9     // x*x
+                    | 4 -> Microsoft.FSharp.Core.Some 5     // x+1
+                    | 6 -> Microsoft.FSharp.Core.Some 36    // x*x
+                    | 7 -> Microsoft.FSharp.Core.Some 8     // x+1
+                    | 9 -> Microsoft.FSharp.Core.Some 81    // x*x
+                    | _ -> Microsoft.FSharp.Core.None
                     
                 let result2 = choose complexChooser array
                 expectArrayEqual result2 [|2; 9; 5; 36; 8; 81|] "choose should apply complex transformation"
@@ -89,46 +89,55 @@ let coreTests =
             testCase "len returns correct collection length" <| fun _ ->
                 Expect.equal (len [|1; 2; 3; 4; 5|]) 5 "len should return correct array length"
                 Expect.equal (len [||]) 0 "len should return 0 for empty array"
-                // For strings, adapt to the SRTP constraint if necessary
-                // The error suggests len has a different expected signature
-                // Instead of direct string usage, we'll need to match the expected signature
-        ]
+            ]
         
-        testList "Option Operations" [
+        testList "ValueOption Operations" [
             testCase "is_some checks option correctly" <| fun _ ->
-                Expect.isTrue (is_some (Some 42)) "is_some should return true for Some"
-                Expect.isFalse (is_some None) "is_some should return false for None"
+                Expect.isTrue (is_some (some 42)) "is_some should return true for Some"
+                Expect.isFalse (is_some none<int>) "is_some should return false for None"
             
             testCase "is_none checks option correctly" <| fun _ ->
-                Expect.isTrue (is_none None) "is_none should return true for None"
-                Expect.isFalse (is_none (Some 42)) "is_none should return false for Some"
+                // Test using IsSome/IsNone properties instead of equality
+                let noneVal = none<int>
+                let someVal = some 42
+                
+                Expect.isTrue (is_none noneVal) "is_none should return true for None"
+                Expect.isFalse (is_none someVal) "is_none should return false for Some"
             
             testCase "value unwraps option correctly" <| fun _ ->
-                Expect.equal (value (Some 42)) 42 "value should return the wrapped value"
-                Expect.throws (fun () -> value None |> ignore) "value should throw for None"
+                Expect.equal (value (some 42)) 42 "value should return the wrapped value"
+                Expect.throws (fun () -> value none<int> |> ignore) "value should throw for None"
             
             testCase "default_with applies fallback for None" <| fun _ ->
-                Expect.equal (default_with (fun () -> 99) (Some 42)) 42 "default_with should return value for Some"
-                Expect.equal (default_with (fun () -> 99) None) 99 "default_with should return fallback for None"
+                Expect.equal (default_with (fun () -> 99) (some 42)) 42 "default_with should return value for Some"
+                Expect.equal (default_with (fun () -> 99) none<int>) 99 "default_with should return fallback for None"
                 
                 // Test with side-effects
                 let mutable called = false
                 let fallback () = called <- true; 99
                 
-                let _ = default_with fallback (Some 42)
+                let _ = default_with fallback (some 42)
                 Expect.isFalse called "default_with shouldn't call fallback for Some"
                 
                 called <- false
-                let _ = default_with fallback None
+                let _ = default_with fallback none<int>
                 Expect.isTrue called "default_with should call fallback for None"
             
             testCase "some wraps value in Some" <| fun _ ->
-                Expect.equal (some 42) (Some 42) "some should wrap value in Some"
-                Expect.isTrue (is_some (some 42 : int option)) "some should create a value that is_some considers Some"
+                // Type annotation for clarity
+                let option1: ValueOption<int> = some 42
+                let option2: ValueOption<int> = Some 42
+                Expect.equal option1 option2 "some should create Same value as Some"
+                Expect.isTrue (is_some (some 42)) "some should create a value that is_some considers Some"
             
             testCase "none creates None value" <| fun _ ->
-                Expect.equal none<int option> None "none should create None of correct type"
-                Expect.isTrue (is_none none<int option>) "none should create a value that is_none considers None"
+                // Test using properties instead of equality
+                let noneVal = none<int>
+                
+                // Check properties directly
+                Expect.isTrue noneVal.IsNone "none should create a value with IsNone=true"
+                Expect.isFalse noneVal.IsSome "none should create a value with IsSome=false"
+                Expect.isTrue (is_none noneVal) "none should create a value that is_none considers None"
         ]
         
         testList "Equality Operations" [
@@ -193,10 +202,6 @@ let coreTests =
                 Expect.equal personOne.Name "John" "one<TestPerson> Name should be 'John'"
                 Expect.equal personOne.Age 1 "one<TestPerson> Age should be 1"
                 Expect.equal personOne.IsActive true "one<TestPerson> IsActive should be true"
-            
-            // Skip default_value tests for now until we better understand the SRTP constraints
-            // The errors suggest there's a mismatch between our understanding and the implementation
-            // We'll focus on the other core functionality tests first
         ]
         
         testList "String Operations" [

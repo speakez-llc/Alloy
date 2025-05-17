@@ -1,10 +1,15 @@
 namespace Alloy
 
+open System
+open System.Collections.Generic
+
 /// <summary>
 /// A zero-allocation, value-type option implementation that avoids heap allocations.
 /// </summary>
 /// <typeparam name="T">The type of the optional value.</typeparam>
 [<Struct>]
+[<CustomEquality>]
+[<NoComparison>]
 type ValueOption<'T> =
     private { 
         hasValue: bool
@@ -38,15 +43,77 @@ type ValueOption<'T> =
     /// <returns>A string representing the option's value or None.</returns>
     override this.ToString() = 
         if this.hasValue then $"Some({this.value})" else "None"
+        
+    /// <summary>Determines if this ValueOption is equal to another object.</summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>True if the objects are equal, false otherwise.</returns>
+    override this.Equals(obj) =
+        match obj with
+        | :? ValueOption<'T> as other ->
+            if this.IsNone && other.IsNone then true
+            elif this.IsSome && other.IsSome then 
+                EqualityComparer<'T>.Default.Equals(this.Value, other.Value)
+            else false
+        | _ -> false
+
+    /// <summary>Returns a hash code for this ValueOption.</summary>
+    /// <returns>A hash code for this ValueOption.</returns>
+    override this.GetHashCode() =
+        if this.IsNone then 0
+        else 
+            let valueHash = 
+                if isNull (box this.Value) then 0
+                else EqualityComparer<'T>.Default.GetHashCode(this.Value)
+            hash (1, valueHash)
+
+    /// <summary>Implements the IEquatable interface.</summary>
+    interface IEquatable<ValueOption<'T>> with
+        /// <summary>Determines if this ValueOption is equal to another ValueOption.</summary>
+        /// <param name="other">The ValueOption to compare with.</param>
+        /// <returns>True if the ValueOptions are equal, false otherwise.</returns>
+        member this.Equals(other) =
+            if this.IsNone && other.IsNone then true
+            elif this.IsSome && other.IsSome then 
+                EqualityComparer<'T>.Default.Equals(this.Value, other.Value)
+            else false
+
+    /// <summary>Determines if two ValueOptions are equal.</summary>
+    /// <param name="left">The first ValueOption.</param>
+    /// <param name="right">The second ValueOption.</param>
+    /// <returns>True if the ValueOptions are equal, false otherwise.</returns>
+    static member op_Equality (left: ValueOption<'T>, right: ValueOption<'T>) =
+        if left.IsNone && right.IsNone then true
+        elif left.IsSome && right.IsSome then 
+            EqualityComparer<'T>.Default.Equals(left.Value, right.Value)
+        else false
+    
+    /// <summary>Determines if two ValueOptions are not equal.</summary>
+    /// <param name="left">The first ValueOption.</param>
+    /// <param name="right">The second ValueOption.</param>
+    /// <returns>True if the ValueOptions are not equal, false otherwise.</returns>
+    static member op_Inequality (left: ValueOption<'T>, right: ValueOption<'T>) =
+        not (ValueOption<'T>.op_Equality(left, right))
+    
+[<AutoOpen>]
+module ValueOptionPatterns =
+    /// Pattern matching for ValueOption
+    let (|Some|None|) (opt: ValueOption<'T>) =
+        if opt.IsSome then Some opt.Value else None
+
+[<AutoOpen>]
+module ValueOptionConstructors =
+    /// Creates a Some value for ValueOption
+    let Some value = ValueOption.Some value
+    
+    /// Creates a None value for ValueOption
+    let None<'T> = ValueOption<'T>.None
+
 
 /// <summary>
 /// Functions for working with the ValueOption&lt;'T&gt; type.
 /// </summary>
 module ValueOption =
-    /// <summary>Active pattern for matching ValueOption values.</summary>
-    let (|Some|None|) (opt: ValueOption<'T>) =
-        if opt.IsSome then Some opt.Value else None
-    
+  
     /// <summary>Creates a Some value.</summary>
     /// <param name="v">The value to wrap.</param>
     /// <returns>A ValueOption containing the value.</returns>
