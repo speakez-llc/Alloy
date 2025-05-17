@@ -3,7 +3,6 @@ module Alloy.Tests.CoreTests
 open Expecto
 open Alloy
 open Alloy.Core
-open Alloy.ValueOption
 open Alloy.Tests.TestHelpers
 
 /// Tests for Core module functionality
@@ -93,46 +92,46 @@ let coreTests =
         
         testList "ValueOption Operations" [
             testCase "is_some checks option correctly" <| fun _ ->
-                Expect.isTrue (is_some (some 42)) "is_some should return true for Some"
-                Expect.isFalse (is_some none<int>) "is_some should return false for None"
+                Expect.isTrue (is_some (Some 42)) "is_some should return true for Some"
+                Expect.isFalse (is_some None<int>) "is_some should return false for None"
             
             testCase "is_none checks option correctly" <| fun _ ->
                 // Test using IsSome/IsNone properties instead of equality
-                let noneVal = none<int>
-                let someVal = some 42
+                let noneVal = None<int>
+                let someVal = Some 42
                 
                 Expect.isTrue (is_none noneVal) "is_none should return true for None"
                 Expect.isFalse (is_none someVal) "is_none should return false for Some"
             
             testCase "value unwraps option correctly" <| fun _ ->
-                Expect.equal (value (some 42)) 42 "value should return the wrapped value"
-                Expect.throws (fun () -> value none<int> |> ignore) "value should throw for None"
+                Expect.equal (value (Some 42)) 42 "value should return the wrapped value"
+                Expect.throws (fun () -> value None<int> |> ignore) "value should throw for None"
             
             testCase "default_with applies fallback for None" <| fun _ ->
-                Expect.equal (default_with (fun () -> 99) (some 42)) 42 "default_with should return value for Some"
-                Expect.equal (default_with (fun () -> 99) none<int>) 99 "default_with should return fallback for None"
+                Expect.equal (default_with (fun () -> 99) (Some 42)) 42 "default_with should return value for Some"
+                Expect.equal (default_with (fun () -> 99) None<int>) 99 "default_with should return fallback for None"
                 
                 // Test with side-effects
                 let mutable called = false
                 let fallback () = called <- true; 99
                 
-                let _ = default_with fallback (some 42)
+                let _ = default_with fallback (Some 42)
                 Expect.isFalse called "default_with shouldn't call fallback for Some"
                 
                 called <- false
-                let _ = default_with fallback none<int>
+                let _ = default_with fallback None<int>
                 Expect.isTrue called "default_with should call fallback for None"
             
             testCase "some wraps value in Some" <| fun _ ->
                 // Type annotation for clarity
-                let option1: ValueOption<int> = some 42
+                let option1: ValueOption<int> = Some 42
                 let option2: ValueOption<int> = Some 42
-                Expect.equal option1 option2 "some should create Same value as Some"
-                Expect.isTrue (is_some (some 42)) "some should create a value that is_some considers Some"
+                Expect.isTrue option1.IsSome "Option should have a value"
+                Expect.equal option1.Value 42 "Option should contain 42"
             
             testCase "none creates None value" <| fun _ ->
                 // Test using properties instead of equality
-                let noneVal = none<int>
+                let noneVal = None<int>
                 
                 // Check properties directly
                 Expect.isTrue noneVal.IsNone "none should create a value with IsNone=true"

@@ -2,7 +2,6 @@ namespace Alloy
 
 open Alloy.Core
 open Alloy.Numerics
-open Alloy.ValueOption
 
 /// <summary>
 /// Module containing optimized string operations with safe and efficient string manipulation
@@ -11,16 +10,10 @@ module String =
     [<Literal>]
     let private INT_MAX_VALUE = 2147483647
 
-    /// <summary>Helper function to parse digits</summary>
-    /// <param name="c">The character to parse</param>
-    /// <returns>Some digit if the character is a digit, None otherwise</returns>
     let inline private parseDigit (c: char) : ValueOption<int> =
-        if c >= '0' && c <= '9' then some(int c - int '0')
-        else none
+        if c >= '0' && c <= '9' then Some(int c - int '0')
+        else None
 
-    /// <summary>Safely increment an integer</summary>
-    /// <param name="i">The integer to increment</param>
-    /// <returns>The incremented value, or the same value if it is the maximum integer</returns>
     let inline private increment (i: int) : int =
         if i = INT_MAX_VALUE then i
         else add i 1
@@ -73,8 +66,8 @@ module String =
     /// <param name="s">The source string</param>
     /// <returns>The character at the specified position, or ValueNone if invalid</returns>
     let inline charAt (index: int) (s: string) : ValueOption<char> =
-        if isNull s || index < 0 || index >= s.Length then none<char>
-        else some s.[index]
+        if isNull s || index < 0 || index >= s.Length then None<char>
+        else Some s.[index]
     
     /// <summary>Checks if a character is a digit</summary>
     /// <param name="c">The character to check</param>
