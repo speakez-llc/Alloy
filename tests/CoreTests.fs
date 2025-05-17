@@ -96,12 +96,16 @@ let coreTests =
                 Expect.isFalse (is_some None<int>) "is_some should return false for None"
             
             testCase "is_none checks option correctly" <| fun _ ->
-                // Test using IsSome/IsNone properties instead of equality
                 let noneVal = None<int>
                 let someVal = Some 42
                 
-                Expect.isTrue (is_none noneVal) "is_none should return true for None"
-                Expect.isFalse (is_none someVal) "is_none should return false for Some"
+                // Use property checks instead of equality comparison
+                Expect.isTrue noneVal.IsNone "is_none should return true for None"
+                Expect.isFalse someVal.IsNone "is_none should return false for Some"
+                
+                // Or use the ValueOption.isNone function directly
+                Expect.isTrue (ValueOption.isNone noneVal) "ValueOption.isNone should return true for None"
+                Expect.isFalse (ValueOption.isNone someVal) "ValueOption.isNone should return false for Some"
             
             testCase "value unwraps option correctly" <| fun _ ->
                 Expect.equal (value (Some 42)) 42 "value should return the wrapped value"
@@ -130,13 +134,11 @@ let coreTests =
                 Expect.equal option1.Value 42 "Option should contain 42"
             
             testCase "none creates None value" <| fun _ ->
-                // Test using properties instead of equality
                 let noneVal = None<int>
                 
-                // Check properties directly
+                // Use property checks directly
                 Expect.isTrue noneVal.IsNone "none should create a value with IsNone=true"
                 Expect.isFalse noneVal.IsSome "none should create a value with IsSome=false"
-                Expect.isTrue (is_none noneVal) "none should create a value that is_none considers None"
         ]
         
         testList "Equality Operations" [

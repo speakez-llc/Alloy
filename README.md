@@ -62,9 +62,34 @@ let doubled =
     |> ValueOption.map (fun x -> x * 2)
     |> ValueOption.defaultValue 0
 
-// Converting between static options and standard F# options
+// Converting between ValueOption and standard F# options
 let standardOption = ValueOption.toOption someValue
-let backToStatic = ValueOption.ofOption (Some 42)
+let backToValueOption = ValueOption.ofOption (Some 42)
+```
+
+### Comparing ValueOption Values
+
+When comparing ValueOption values, use the provided `equals` function rather than relying on the `=` operator directly:
+
+```fsharp
+// Creating two ValueOptions for comparison
+let a = ValueOption.Some 42
+let b = ValueOption.Some 42
+
+// PREFERRED: Use the dedicated equals function
+let areEqual = ValueOption.equals a b  // true
+
+// ALTERNATIVE: Use pattern matching for comparison
+let areEqualByPattern = 
+    match a, b with
+    | Some aVal, Some bVal -> aVal = bVal
+    | None, None -> true
+    | _ -> false
+
+// For testing with Expecto or other frameworks, use property access
+// rather than direct equality comparison
+Expect.isTrue a.IsSome "a should be Some"
+Expect.equal a.Value 42 "a should contain 42"
 ```
 
 ### How ValueOption Works
@@ -245,6 +270,7 @@ A struct-based option type for zero-allocation operations:
 - `ValueOption.bind f opt` - Applies a function that returns an option
 - `ValueOption.defaultValue d opt` - Returns the value or default
 - `ValueOption.defaultWith f opt` - Returns the value or applies a function
+- `ValueOption.equals a b` - Checks equality between two ValueOptions
 - `ValueOption.ofOption opt` - Converts from a standard F# option
 - `ValueOption.toOption opt` - Converts to a standard F# option
 
