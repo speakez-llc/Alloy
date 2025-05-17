@@ -284,7 +284,3 @@ A struct-based option type for zero-allocation operations:
 ## Performance
 
 Being a zero-cost abstraction library, Alloy operations compile to the same code as if you wrote the operations directly. This means you get the benefits of high-level abstractions with the performance of low-level code.
-
-## License
-
-Alloy is released under the MIT license.
