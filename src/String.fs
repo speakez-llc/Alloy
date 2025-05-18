@@ -539,3 +539,37 @@ module String =
                     | None -> valid <- false
                         
                 valid
+
+    /// <summary>Creates a new string by repeating a character a specified number of times</summary>
+    /// <param name="count">The number of times to repeat the character</param>
+    /// <param name="c">The character to repeat</param>
+    /// <returns>A new string consisting of the repeated character</returns>
+    let inline replicate (count: int) (c: char) : string =
+        if count <= 0 then ""
+        else
+            let chars = Array.create count c
+            new string(chars)
+
+    /// <summary>Pads a string on the left with a specified character to reach a specified length</summary>
+    /// <param name="paddingChar">The character to use for padding</param>
+    /// <param name="totalWidth">The desired total length of the resulting string</param>
+    /// <param name="s">The string to pad</param>
+    /// <returns>The padded string</returns>
+    let inline padLeft (paddingChar: char) (totalWidth: int) (s: string) : string =
+        if isNull s then ""
+        elif s.Length >= totalWidth then s
+        else
+            let padding = replicate (subtract totalWidth s.Length) paddingChar
+            concat padding s
+
+    /// <summary>Pads a string on the right with a specified character to reach a specified length</summary>
+    /// <param name="paddingChar">The character to use for padding</param>
+    /// <param name="totalWidth">The desired total length of the resulting string</param>
+    /// <param name="s">The string to pad</param>
+    /// <returns>The padded string</returns>
+    let inline padRight (paddingChar: char) (totalWidth: int) (s: string) : string =
+        if isNull s then ""
+        elif s.Length >= totalWidth then s
+        else
+            let padding = replicate (subtract totalWidth s.Length) paddingChar
+            concat s padding
