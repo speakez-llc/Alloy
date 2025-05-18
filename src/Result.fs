@@ -5,6 +5,7 @@ open Alloy.ValueOption
 /// <summary>
 /// Module containing Result operations for error handling and composition.
 /// </summary>
+[<AutoOpen>]
 module Result =
     /// <summary>
     /// Applies a function to a Result value if it's Ok.

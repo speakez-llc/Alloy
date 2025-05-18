@@ -6,6 +6,7 @@ open Alloy.Numerics
 /// <summary>
 /// Module containing optimized string operations with safe and efficient string manipulation
 /// </summary>
+[<AutoOpen>]
 module String =
     [<Literal>]
     let private INT_MAX_VALUE = 2147483647

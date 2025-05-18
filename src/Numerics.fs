@@ -2,6 +2,7 @@ module Alloy.Numerics
 
 open Alloy.Core
 
+[<AutoOpen>]
 module Internal =
     // Basic numeric operations for primitive types
     
@@ -85,7 +86,7 @@ module Internal =
         static member inline SubtractFloat32(a: float32<'u>, b: float32<'u>) = a - b
         static member inline SubtractDecimal(a: decimal<'u>, b: decimal<'u>) = a - b
         
-        // Multiply scalar implementations for unit-of-measure types
+        // Multiply: unit * scalar implementations
         static member inline MultiplyIntScalar(a: int<'u>, b: int) = a * b
         static member inline MultiplyFloatScalar(a: float<'u>, b: float) = a * b
         static member inline MultiplyInt64Scalar(a: int64<'u>, b: int64) = a * b
@@ -93,13 +94,29 @@ module Internal =
         static member inline MultiplyFloat32Scalar(a: float32<'u>, b: float32) = a * b
         static member inline MultiplyDecimalScalar(a: decimal<'u>, b: decimal) = a * b
         
-        // Divide scalar implementations for unit-of-measure types
+        // Multiply: scalar * unit implementations (new)
+        static member inline MultiplyScalarInt(a: int, b: int<'u>) = a * b
+        static member inline MultiplyScalarFloat(a: float, b: float<'u>) = a * b
+        static member inline MultiplyScalarInt64(a: int64, b: int64<'u>) = a * b
+        static member inline MultiplyScalarUInt64(a: uint64, b: uint64<'u>) = a * b
+        static member inline MultiplyScalarFloat32(a: float32, b: float32<'u>) = a * b
+        static member inline MultiplyScalarDecimal(a: decimal, b: decimal<'u>) = a * b
+        
+        // Divide: unit / scalar implementations
         static member inline DivideIntScalar(a: int<'u>, b: int) = a / b
         static member inline DivideFloatScalar(a: float<'u>, b: float) = a / b
         static member inline DivideInt64Scalar(a: int64<'u>, b: int64) = a / b
         static member inline DivideUInt64Scalar(a: uint64<'u>, b: uint64) = a / b
         static member inline DivideFloat32Scalar(a: float32<'u>, b: float32) = a / b
         static member inline DivideDecimalScalar(a: decimal<'u>, b: decimal) = a / b
+        
+        // Divide: scalar / unit implementations (new)
+        static member inline DivideScalarInt(a: int, b: int<'u>) = a / b
+        static member inline DivideScalarFloat(a: float, b: float<'u>) = a / b
+        static member inline DivideScalarInt64(a: int64, b: int64<'u>) = a / b
+        static member inline DivideScalarUInt64(a: uint64, b: uint64<'u>) = a / b
+        static member inline DivideScalarFloat32(a: float32, b: float32<'u>) = a / b
+        static member inline DivideScalarDecimal(a: decimal, b: decimal<'u>) = a / b
     
     // Operations for unit-of-measure types - different measures
     
@@ -360,37 +377,37 @@ module Internal =
     
     [<AbstractClass; Sealed>]
     type Add =
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            ((^T or BasicOps or MeasureOps) : (static member Add: ^T * ^T -> ^T) (a, b))
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps or MeasureOps) : (static member Add: ^a * ^b -> ^r) (a, b))
     
     [<AbstractClass; Sealed>]
     type Subtract =
-        static member inline Invoke (a: ^T) (b: ^T) : ^T =
-            ((^T or BasicOps or MeasureOps) : (static member Subtract: ^T * ^T -> ^T) (a, b))
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps or MeasureOps) : (static member Subtract: ^a * ^b -> ^r) (a, b))
     
     [<AbstractClass; Sealed>]
     type Multiply =
-        static member inline Invoke (a: ^T) (b: ^U) : ^V =
-            ((^T or ^U or ^V or BasicOps or MeasureOps or MeasureMeasureOps) : 
-                (static member Multiply: ^T * ^U -> ^V) (a, b))
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps or MeasureOps or MeasureMeasureOps) : 
+                (static member Multiply: ^a * ^b -> ^r) (a, b))
     
     [<AbstractClass; Sealed>]
     type Divide =
-        static member inline Invoke (a: ^T) (b: ^U) : ^V =
-            ((^T or ^U or ^V or BasicOps or MeasureOps or MeasureMeasureOps) : 
-                (static member Divide: ^T * ^U -> ^V) (a, b))
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps or MeasureOps or MeasureMeasureOps) : 
+                (static member Divide: ^a * ^b -> ^r) (a, b))
     
     [<AbstractClass; Sealed>]
     type Sum =
-        static member inline Invoke (collection: ^Collection) : ^T =
-            ((^Collection or ^T or ArrayOps or MeasureArrayOps) : 
-                (static member Sum: ^Collection -> ^T) collection)
+        static member inline Invoke(collection) =
+            ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
+                (static member Sum: ^collection -> ^t) collection)
     
     [<AbstractClass; Sealed>]
     type Average =
-        static member inline Invoke (collection: ^Collection) : ^T =
-            ((^Collection or ^T or ArrayOps or MeasureArrayOps) : 
-                (static member Average: ^Collection -> ^T) collection)
+        static member inline Invoke(collection) =
+            ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
+                (static member Average: ^collection -> ^t) collection)
     
     [<Measure>] type internal TestUnit
     
@@ -443,7 +460,7 @@ module Internal =
 /// <param name="b">The second value.</param>
 /// <typeparam name="T">The type of values to add.</typeparam>
 /// <returns>The result of adding a and b.</returns>
-let inline add a b = Internal.Add.Invoke a b
+let inline add a b = Internal.Add.Invoke(a, b)
 
 /// <summary>
 /// Subtracts the second value from the first value.
@@ -452,7 +469,7 @@ let inline add a b = Internal.Add.Invoke a b
 /// <param name="b">The value to subtract.</param>
 /// <typeparam name="T">The type of values to subtract.</typeparam>
 /// <returns>The result of subtracting b from a.</returns>
-let inline subtract a b = Internal.Subtract.Invoke a b
+let inline subtract a b = Internal.Subtract.Invoke(a, b)
 
 /// <summary>
 /// Multiplies two values.
@@ -463,7 +480,7 @@ let inline subtract a b = Internal.Subtract.Invoke a b
 /// <typeparam name="U">The type of the second value.</typeparam>
 /// <typeparam name="V">The resulting type.</typeparam>
 /// <returns>The result of multiplying a and b.</returns>
-let inline multiply a b = Internal.Multiply.Invoke a b
+let inline multiply a b = Internal.Multiply.Invoke(a, b)
 
 /// <summary>
 /// Divides the first value by the second value.
@@ -474,7 +491,7 @@ let inline multiply a b = Internal.Multiply.Invoke a b
 /// <typeparam name="U">The type of the divisor.</typeparam>
 /// <typeparam name="V">The resulting type.</typeparam>
 /// <returns>The result of dividing a by b.</returns>
-let inline divide a b = Internal.Divide.Invoke a b
+let inline divide a b = Internal.Divide.Invoke(a, b)
 
 /// <summary>
 /// Computes the sum of all elements in a collection.
@@ -483,7 +500,7 @@ let inline divide a b = Internal.Divide.Invoke a b
 /// <typeparam name="Collection">The type of the collection.</typeparam>
 /// <typeparam name="T">The type of the elements in the collection.</typeparam>
 /// <returns>The sum of all elements in the collection.</returns>
-let inline sum collection = Internal.Sum.Invoke collection
+let inline sum collection = Internal.Sum.Invoke(collection)
 
 /// <summary>
 /// Computes the average of all elements in a collection.
@@ -492,7 +509,7 @@ let inline sum collection = Internal.Sum.Invoke collection
 /// <typeparam name="Collection">The type of the collection.</typeparam>
 /// <typeparam name="T">The type of the elements in the collection.</typeparam>
 /// <returns>The average of all elements in the collection.</returns>
-let inline average collection = Internal.Average.Invoke collection
+let inline average collection = Internal.Average.Invoke(collection)
 
 /// <summary>
 /// Attaches a unit of measure to an integer value.

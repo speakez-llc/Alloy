@@ -12,7 +12,6 @@
     <Compile Include="ValueOption.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="String.fs" />
-    <Compile Include="AutoOpen.fs" />
   </ItemGroup>
 
   <ItemGroup>
