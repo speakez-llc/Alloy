@@ -243,7 +243,7 @@ let spanTests =
             testCase "In-place array transformation" <| fun _ ->
                 // Example: Transform an array in-place
                 let array = [|1; 2; 3; 4; 5|]
-                let span = asSpan array
+                let mutable span = asSpan array
                 
                 // Square each element without allocating a new array
                 for i = 0 to span.Length - 1 do

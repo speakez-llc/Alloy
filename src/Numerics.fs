@@ -1,11 +1,19 @@
-module Alloy.Numerics
+namespace Alloy
 
-open Alloy.Core
-
+/// <summary>
+/// Provides zero-cost numeric operations through statically resolved type parameters.
+/// All functions are exposed through the AutoOpen attribute, making them accessible
+/// when opening the Alloy namespace.
+/// </summary>
 [<AutoOpen>]
-module Internal =
-    // Basic numeric operations for primitive types
+module Numerics =
+    // ----------------------
+    // Type implementations
+    // ----------------------
     
+    /// <summary>
+    /// Provides basic numeric operations for primitive types
+    /// </summary>
     [<AbstractClass; Sealed>]
     type BasicOps =
         // Add implementations
@@ -66,8 +74,9 @@ module Internal =
         static member inline Divide(a: int16, b: int16) = a / b
         static member inline Divide(a: uint16, b: uint16) = a / b
     
-    // Operations for unit-of-measure types - single measure
-    
+    /// <summary>
+    /// Provides operations for unit-of-measure types with same measure
+    /// </summary>
     [<AbstractClass; Sealed>]
     type MeasureOps =
         // Add implementations for unit-of-measure types
@@ -94,7 +103,7 @@ module Internal =
         static member inline MultiplyFloat32Scalar(a: float32<'u>, b: float32) = a * b
         static member inline MultiplyDecimalScalar(a: decimal<'u>, b: decimal) = a * b
         
-        // Multiply: scalar * unit implementations (new)
+        // Multiply: scalar * unit implementations
         static member inline MultiplyScalarInt(a: int, b: int<'u>) = a * b
         static member inline MultiplyScalarFloat(a: float, b: float<'u>) = a * b
         static member inline MultiplyScalarInt64(a: int64, b: int64<'u>) = a * b
@@ -110,7 +119,7 @@ module Internal =
         static member inline DivideFloat32Scalar(a: float32<'u>, b: float32) = a / b
         static member inline DivideDecimalScalar(a: decimal<'u>, b: decimal) = a / b
         
-        // Divide: scalar / unit implementations (new)
+        // Divide: scalar / unit implementations
         static member inline DivideScalarInt(a: int, b: int<'u>) = a / b
         static member inline DivideScalarFloat(a: float, b: float<'u>) = a / b
         static member inline DivideScalarInt64(a: int64, b: int64<'u>) = a / b
@@ -118,8 +127,9 @@ module Internal =
         static member inline DivideScalarFloat32(a: float32, b: float32<'u>) = a / b
         static member inline DivideScalarDecimal(a: decimal, b: decimal<'u>) = a / b
     
-    // Operations for unit-of-measure types - different measures
-    
+    /// <summary>
+    /// Provides operations for unit-of-measure types with different measures
+    /// </summary>
     [<AbstractClass; Sealed>]
     type MeasureMeasureOps =
         // Multiply implementations for different unit-of-measure types
@@ -138,8 +148,9 @@ module Internal =
         static member inline DivideFloat32Units(a: float32<'u1>, b: float32<'u2>) = a / b
         static member inline DivideDecimalUnits(a: decimal<'u1>, b: decimal<'u2>) = a / b
     
-    // Collection operations for arrays of primitive types
-    
+    /// <summary>
+    /// Provides collection operations for arrays of primitive types
+    /// </summary>
     [<AbstractClass; Sealed>]
     type ArrayOps =
         static member inline Sum(xs: int[]) = 
@@ -250,8 +261,9 @@ module Internal =
                 for i = 0 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / uint16 xs.Length
     
-    // Collection operations for arrays of unit-of-measure types
-    
+    /// <summary>
+    /// Provides collection operations for arrays of unit-of-measure types
+    /// </summary>
     [<AbstractClass; Sealed>]
     type MeasureArrayOps =
         static member inline SumInt(xs: int<'u>[]) = 
@@ -324,8 +336,9 @@ module Internal =
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / decimal xs.Length
     
-    // Min/Max operations for primitive types
-    
+    /// <summary>
+    /// Min/Max operations for various numeric types
+    /// </summary>
     module MinMaxOperations =
         [<AbstractClass; Sealed>]
         type MinImpl =
@@ -373,44 +386,102 @@ module Internal =
             static member MaxFloat32(a: float32<'u>, b: float32<'u>) : float32<'u> = if a > b then a else b
             static member MaxDecimal(a: decimal<'u>, b: decimal<'u>) : decimal<'u> = if a > b then a else b
     
-    // Main type interfaces for public operators
+    // --------------------------
+    // Entry point type interfaces
+    // --------------------------
     
+    /// <summary>
+    /// Entry point for addition operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Add =
         static member inline Invoke(a, b) =
             ((^a or ^b or BasicOps or MeasureOps) : (static member Add: ^a * ^b -> ^r) (a, b))
     
+    /// <summary>
+    /// Entry point for subtraction operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Subtract =
         static member inline Invoke(a, b) =
             ((^a or ^b or BasicOps or MeasureOps) : (static member Subtract: ^a * ^b -> ^r) (a, b))
     
+    /// <summary>
+    /// Entry point for multiplication operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Multiply =
         static member inline Invoke(a, b) =
             ((^a or ^b or BasicOps or MeasureOps or MeasureMeasureOps) : 
                 (static member Multiply: ^a * ^b -> ^r) (a, b))
     
+    /// <summary>
+    /// Entry point for division operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Divide =
         static member inline Invoke(a, b) =
             ((^a or ^b or BasicOps or MeasureOps or MeasureMeasureOps) : 
                 (static member Divide: ^a * ^b -> ^r) (a, b))
     
+    /// <summary>
+    /// Entry point for sum operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Sum =
         static member inline Invoke(collection) =
             ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
                 (static member Sum: ^collection -> ^t) collection)
     
+    /// <summary>
+    /// Entry point for average operations
+    /// </summary>
     [<AbstractClass; Sealed>]
     type Average =
         static member inline Invoke(collection) =
             ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
                 (static member Average: ^collection -> ^t) collection)
     
+    // Comparison operations
+    
+    /// <summary>
+    /// Entry point for less than operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type LessThan = 
+        static member inline Invoke(a, b) = a < b
+    
+    /// <summary>
+    /// Entry point for greater than operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type GreaterThan = 
+        static member inline Invoke(a, b) = a > b
+    
+    /// <summary>
+    /// Entry point for less than or equal operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type LessThanOrEqual = 
+        static member inline Invoke(a, b) = a <= b
+    
+    /// <summary>
+    /// Entry point for greater than or equal operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type GreaterThanOrEqual = 
+        static member inline Invoke(a, b) = a >= b
+    
+    /// <summary>
+    /// Entry point for equality operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Equals = 
+        static member inline Invoke(a, b) = a = b
+    
     [<Measure>] type internal TestUnit
     
+    // Register implementations for static resolution
     let private registerMinMaxImplementations() =
         let _ = MinMaxOperations.MinImpl.Min(0, 0)
         let _ = MinMaxOperations.MaxImpl.Max(0, 0)
@@ -438,6 +509,7 @@ module Internal =
     
     do registerMinMaxImplementations()
 
+    // Internal helpers for unit conversions
     let inline intWithUnitInternal<[<Measure>] 'u> (value: int) : int<'u> = 
         LanguagePrimitives.Int32WithMeasure<'u>(value)
 
@@ -453,145 +525,189 @@ module Internal =
     let inline decimalWithUnitInternal<[<Measure>] 'u> (value: decimal) : decimal<'u> = 
         LanguagePrimitives.DecimalWithMeasure<'u>(value)
 
-/// <summary>
-/// Adds two values of the same type.
-/// </summary>
-/// <param name="a">The first value.</param>
-/// <param name="b">The second value.</param>
-/// <typeparam name="T">The type of values to add.</typeparam>
-/// <returns>The result of adding a and b.</returns>
-let inline add a b = Internal.Add.Invoke(a, b)
+    // --------------------------
+    // Public API
+    // --------------------------
+    
+    /// <summary>
+    /// Adds two values of the same type.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <typeparam name="T">The type of values to add.</typeparam>
+    /// <returns>The result of adding a and b.</returns>
+    let inline add a b = Add.Invoke(a, b)
 
-/// <summary>
-/// Subtracts the second value from the first value.
-/// </summary>
-/// <param name="a">The value to subtract from.</param>
-/// <param name="b">The value to subtract.</param>
-/// <typeparam name="T">The type of values to subtract.</typeparam>
-/// <returns>The result of subtracting b from a.</returns>
-let inline subtract a b = Internal.Subtract.Invoke(a, b)
+    /// <summary>
+    /// Subtracts the second value from the first value.
+    /// </summary>
+    /// <param name="a">The value to subtract from.</param>
+    /// <param name="b">The value to subtract.</param>
+    /// <typeparam name="T">The type of values to subtract.</typeparam>
+    /// <returns>The result of subtracting b from a.</returns>
+    let inline subtract a b = Subtract.Invoke(a, b)
 
-/// <summary>
-/// Multiplies two values.
-/// </summary>
-/// <param name="a">The first value.</param>
-/// <param name="b">The second value.</param>
-/// <typeparam name="T">The type of the first value.</typeparam>
-/// <typeparam name="U">The type of the second value.</typeparam>
-/// <typeparam name="V">The resulting type.</typeparam>
-/// <returns>The result of multiplying a and b.</returns>
-let inline multiply a b = Internal.Multiply.Invoke(a, b)
+    /// <summary>
+    /// Multiplies two values.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <typeparam name="T">The type of the first value.</typeparam>
+    /// <typeparam name="U">The type of the second value.</typeparam>
+    /// <typeparam name="V">The resulting type.</typeparam>
+    /// <returns>The result of multiplying a and b.</returns>
+    let inline multiply a b = Multiply.Invoke(a, b)
 
-/// <summary>
-/// Divides the first value by the second value.
-/// </summary>
-/// <param name="a">The dividend.</param>
-/// <param name="b">The divisor.</param>
-/// <typeparam name="T">The type of the dividend.</typeparam>
-/// <typeparam name="U">The type of the divisor.</typeparam>
-/// <typeparam name="V">The resulting type.</typeparam>
-/// <returns>The result of dividing a by b.</returns>
-let inline divide a b = Internal.Divide.Invoke(a, b)
+    /// <summary>
+    /// Divides the first value by the second value.
+    /// </summary>
+    /// <param name="a">The dividend.</param>
+    /// <param name="b">The divisor.</param>
+    /// <typeparam name="T">The type of the dividend.</typeparam>
+    /// <typeparam name="U">The type of the divisor.</typeparam>
+    /// <typeparam name="V">The resulting type.</typeparam>
+    /// <returns>The result of dividing a by b.</returns>
+    let inline divide a b = Divide.Invoke(a, b)
 
-/// <summary>
-/// Computes the sum of all elements in a collection.
-/// </summary>
-/// <param name="collection">The collection to sum.</param>
-/// <typeparam name="Collection">The type of the collection.</typeparam>
-/// <typeparam name="T">The type of the elements in the collection.</typeparam>
-/// <returns>The sum of all elements in the collection.</returns>
-let inline sum collection = Internal.Sum.Invoke(collection)
+    /// <summary>
+    /// Computes the sum of all elements in a collection.
+    /// </summary>
+    /// <param name="collection">The collection to sum.</param>
+    /// <typeparam name="Collection">The type of the collection.</typeparam>
+    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+    /// <returns>The sum of all elements in the collection.</returns>
+    let inline sum collection = Sum.Invoke(collection)
 
-/// <summary>
-/// Computes the average of all elements in a collection.
-/// </summary>
-/// <param name="collection">The collection to average.</param>
-/// <typeparam name="Collection">The type of the collection.</typeparam>
-/// <typeparam name="T">The type of the elements in the collection.</typeparam>
-/// <returns>The average of all elements in the collection.</returns>
-let inline average collection = Internal.Average.Invoke(collection)
+    /// <summary>
+    /// Computes the average of all elements in a collection.
+    /// </summary>
+    /// <param name="collection">The collection to average.</param>
+    /// <typeparam name="Collection">The type of the collection.</typeparam>
+    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+    /// <returns>The average of all elements in the collection.</returns>
+    let inline average collection = Average.Invoke(collection)
+    
+    /// <summary>
+    /// Checks if the first value is less than the second value.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <returns>True if a is less than b, otherwise false.</returns>
+    let inline lessThan a b = LessThan.Invoke(a, b)
+    
+    /// <summary>
+    /// Checks if the first value is greater than the second value.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <returns>True if a is greater than b, otherwise false.</returns>
+    let inline greaterThan a b = GreaterThan.Invoke(a, b)
+    
+    /// <summary>
+    /// Checks if the first value is less than or equal to the second value.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <returns>True if a is less than or equal to b, otherwise false.</returns>
+    let inline lessThanOrEqual a b = LessThanOrEqual.Invoke(a, b)
+    
+    /// <summary>
+    /// Checks if the first value is greater than or equal to the second value.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <returns>True if a is greater than or equal to b, otherwise false.</returns>
+    let inline greaterThanOrEqual a b = GreaterThanOrEqual.Invoke(a, b)
+    
+    /// <summary>
+    /// Checks if two values are equal.
+    /// </summary>
+    /// <param name="a">The first value.</param>
+    /// <param name="b">The second value.</param>
+    /// <returns>True if the values are equal, otherwise false.</returns>
+    let inline equals a b = Equals.Invoke(a, b)
 
-/// <summary>
-/// Attaches a unit of measure to an integer value.
-/// </summary>
-/// <param name="value">The value to attach the unit to.</param>
-/// <typeparam name="u">The unit of measure to attach.</typeparam>
-/// <returns>The value with the unit of measure attached.</returns>
-let inline intWithUnit<[<Measure>] 'u> (value: int) : int<'u> = 
-    LanguagePrimitives.Int32WithMeasure<'u>(value)
+    /// <summary>
+    /// Attaches a unit of measure to an integer value.
+    /// </summary>
+    /// <param name="value">The value to attach the unit to.</param>
+    /// <typeparam name="u">The unit of measure to attach.</typeparam>
+    /// <returns>The value with the unit of measure attached.</returns>
+    let inline intWithUnit<[<Measure>] 'u> (value: int) : int<'u> = 
+        LanguagePrimitives.Int32WithMeasure<'u>(value)
 
-/// <summary>
-/// Attaches a unit of measure to a floating-point value.
-/// </summary>
-/// <param name="value">The value to attach the unit to.</param>
-/// <typeparam name="u">The unit of measure to attach.</typeparam>
-/// <returns>The value with the unit of measure attached.</returns>
-let inline floatWithUnit<[<Measure>] 'u> (value: float) : float<'u> = 
-    LanguagePrimitives.FloatWithMeasure<'u>(value)
+    /// <summary>
+    /// Attaches a unit of measure to a floating-point value.
+    /// </summary>
+    /// <param name="value">The value to attach the unit to.</param>
+    /// <typeparam name="u">The unit of measure to attach.</typeparam>
+    /// <returns>The value with the unit of measure attached.</returns>
+    let inline floatWithUnit<[<Measure>] 'u> (value: float) : float<'u> = 
+        LanguagePrimitives.FloatWithMeasure<'u>(value)
 
-/// <summary>
-/// Attaches a unit of measure to a 64-bit integer value.
-/// </summary>
-/// <param name="value">The value to attach the unit to.</param>
-/// <typeparam name="u">The unit of measure to attach.</typeparam>
-/// <returns>The value with the unit of measure attached.</returns>
-let inline int64WithUnit<[<Measure>] 'u> (value: int64) : int64<'u> = 
-    LanguagePrimitives.Int64WithMeasure<'u>(value)
+    /// <summary>
+    /// Attaches a unit of measure to a 64-bit integer value.
+    /// </summary>
+    /// <param name="value">The value to attach the unit to.</param>
+    /// <typeparam name="u">The unit of measure to attach.</typeparam>
+    /// <returns>The value with the unit of measure attached.</returns>
+    let inline int64WithUnit<[<Measure>] 'u> (value: int64) : int64<'u> = 
+        LanguagePrimitives.Int64WithMeasure<'u>(value)
 
-/// <summary>
-/// Attaches a unit of measure to a 32-bit floating-point value.
-/// </summary>
-/// <param name="value">The value to attach the unit to.</param>
-/// <typeparam name="u">The unit of measure to attach.</typeparam>
-/// <returns>The value with the unit of measure attached.</returns>
-let inline float32WithUnit<[<Measure>] 'u> (value: float32) : float32<'u> = 
-    LanguagePrimitives.Float32WithMeasure<'u>(value)
+    /// <summary>
+    /// Attaches a unit of measure to a 32-bit floating-point value.
+    /// </summary>
+    /// <param name="value">The value to attach the unit to.</param>
+    /// <typeparam name="u">The unit of measure to attach.</typeparam>
+    /// <returns>The value with the unit of measure attached.</returns>
+    let inline float32WithUnit<[<Measure>] 'u> (value: float32) : float32<'u> = 
+        LanguagePrimitives.Float32WithMeasure<'u>(value)
 
-/// <summary>
-/// Attaches a unit of measure to a decimal value.
-/// </summary>
-/// <param name="value">The value to attach the unit to.</param>
-/// <typeparam name="u">The unit of measure to attach.</typeparam>
-/// <returns>The value with the unit of measure attached.</returns>
-let inline decimalWithUnit<[<Measure>] 'u> (value: decimal) : decimal<'u> = 
-    LanguagePrimitives.DecimalWithMeasure<'u>(value)
+    /// <summary>
+    /// Attaches a unit of measure to a decimal value.
+    /// </summary>
+    /// <param name="value">The value to attach the unit to.</param>
+    /// <typeparam name="u">The unit of measure to attach.</typeparam>
+    /// <returns>The value with the unit of measure attached.</returns>
+    let inline decimalWithUnit<[<Measure>] 'u> (value: decimal) : decimal<'u> = 
+        LanguagePrimitives.DecimalWithMeasure<'u>(value)
 
-/// <summary>
-/// Removes the unit of measure from an integer value.
-/// </summary>
-/// <param name="value">The value from which to remove the unit.</param>
-/// <typeparam name="u">The unit of measure to remove.</typeparam>
-/// <returns>The value without the unit of measure.</returns>
-let inline intFromUnit<[<Measure>] 'u> (value: int<'u>) : int = int value
+    /// <summary>
+    /// Removes the unit of measure from an integer value.
+    /// </summary>
+    /// <param name="value">The value from which to remove the unit.</param>
+    /// <typeparam name="u">The unit of measure to remove.</typeparam>
+    /// <returns>The value without the unit of measure.</returns>
+    let inline intFromUnit<[<Measure>] 'u> (value: int<'u>) : int = int value
 
-/// <summary>
-/// Removes the unit of measure from a floating-point value.
-/// </summary>
-/// <param name="value">The value from which to remove the unit.</param>
-/// <typeparam name="u">The unit of measure to remove.</typeparam>
-/// <returns>The value without the unit of measure.</returns>
-let inline floatFromUnit<[<Measure>] 'u> (value: float<'u>) : float = float value
+    /// <summary>
+    /// Removes the unit of measure from a floating-point value.
+    /// </summary>
+    /// <param name="value">The value from which to remove the unit.</param>
+    /// <typeparam name="u">The unit of measure to remove.</typeparam>
+    /// <returns>The value without the unit of measure.</returns>
+    let inline floatFromUnit<[<Measure>] 'u> (value: float<'u>) : float = float value
 
-/// <summary>
-/// Removes the unit of measure from a 64-bit integer value.
-/// </summary>
-/// <param name="value">The value from which to remove the unit.</param>
-/// <typeparam name="u">The unit of measure to remove.</typeparam>
-/// <returns>The value without the unit of measure.</returns>
-let inline int64FromUnit<[<Measure>] 'u> (value: int64<'u>) : int64 = int64 value
+    /// <summary>
+    /// Removes the unit of measure from a 64-bit integer value.
+    /// </summary>
+    /// <param name="value">The value from which to remove the unit.</param>
+    /// <typeparam name="u">The unit of measure to remove.</typeparam>
+    /// <returns>The value without the unit of measure.</returns>
+    let inline int64FromUnit<[<Measure>] 'u> (value: int64<'u>) : int64 = int64 value
 
-/// <summary>
-/// Removes the unit of measure from a 32-bit floating-point value.
-/// </summary>
-/// <param name="value">The value from which to remove the unit.</param>
-/// <typeparam name="u">The unit of measure to remove.</typeparam>
-/// <returns>The value without the unit of measure.</returns>
-let inline float32FromUnit<[<Measure>] 'u> (value: float32<'u>) : float32 = float32 value
+    /// <summary>
+    /// Removes the unit of measure from a 32-bit floating-point value.
+    /// </summary>
+    /// <param name="value">The value from which to remove the unit.</param>
+    /// <typeparam name="u">The unit of measure to remove.</typeparam>
+    /// <returns>The value without the unit of measure.</returns>
+    let inline float32FromUnit<[<Measure>] 'u> (value: float32<'u>) : float32 = float32 value
 
-/// <summary>
-/// Removes the unit of measure from a decimal value.
-/// </summary>
-/// <param name="value">The value from which to remove the unit.</param>
-/// <typeparam name="u">The unit of measure to remove.</typeparam>
-/// <returns>The value without the unit of measure.</returns>
-let inline decimalFromUnit<[<Measure>] 'u> (value: decimal<'u>) : decimal = decimal value
+    /// <summary>
+    /// Removes the unit of measure from a decimal value.
+    /// </summary>
+    /// <param name="value">The value from which to remove the unit.</param>
+    /// <typeparam name="u">The unit of measure to remove.</typeparam>
+    /// <returns>The value without the unit of measure.</returns>
+    let inline decimalFromUnit<[<Measure>] 'u> (value: decimal<'u>) : decimal = decimal value

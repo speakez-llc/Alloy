@@ -1,4 +1,4 @@
-namespace Alloy
+namespace Alloy.Core
 
 // Import core fsil functionality
 open Fsil
