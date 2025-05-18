@@ -61,6 +61,25 @@ module String =
             result.[add i len1] <- s2Safe.[i]
             
         new string(result)
+
+    /// <summary>Concatenates multiple strings using a separator</summary>
+    /// <param name="separator">The string to use as a separator</param>
+    /// <param name="values">A sequence of strings to join</param>
+    /// <returns>A string consisting of the concatenated elements with separators between them</returns>
+    let inline concatMany (separator: string) (values: seq<string>) : string =
+        if isNull values || Seq.isEmpty values then ""
+        else
+            let mutable result = ""
+            let mutable first = true
+            
+            for value in values do
+                if first then
+                    result <- value
+                    first <- false
+                else
+                    result <- concat (concat result separator) value
+            
+            result
     
     /// <summary>Safely gets the character at the specified position</summary>
     /// <param name="index">The index of the character to get</param>
@@ -127,8 +146,6 @@ module String =
                     onlyWhitespace <- false
                 i <- add i 1
             onlyWhitespace
-    
-
     
     /// <summary>Calculates how many characters are available from a starting position</summary>
     /// <param name="s">The source string</param>
@@ -519,8 +536,6 @@ module String =
                 if charToLower s.[i] <> charToLower value.[i] then
                     equal <- false
             equal
-    
-
     
     /// <summary>Gets a value indicating whether the string is a valid integer</summary>
     /// <param name="s">The string to check</param>

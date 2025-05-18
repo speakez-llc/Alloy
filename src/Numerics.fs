@@ -73,6 +73,76 @@ module Numerics =
         static member inline Divide(a: uint32, b: uint32) = a / b
         static member inline Divide(a: int16, b: int16) = a / b
         static member inline Divide(a: uint16, b: uint16) = a / b
+
+        // Modulo implementations
+        static member inline Modulo(a: int, b: int) = a % b
+        static member inline Modulo(a: float, b: float) = a % b
+        static member inline Modulo(a: int64, b: int64) = a % b
+        static member inline Modulo(a: uint64, b: uint64) = a % b
+        static member inline Modulo(a: float32, b: float32) = a % b
+        static member inline Modulo(a: decimal, b: decimal) = a % b
+        static member inline Modulo(a: byte, b: byte) = a % b
+        static member inline Modulo(a: uint32, b: uint32) = a % b
+        static member inline Modulo(a: int16, b: int16) = a % b
+        static member inline Modulo(a: uint16, b: uint16) = a % b
+
+        // Power implementations
+        static member inline Power(a: int, b: int) = 
+            let mutable result = 1
+            let mutable base' = a
+            let mutable exp = b
+            while exp > 0 do
+                if exp % 2 = 1 then result <- result * base'
+                base' <- base' * base'
+                exp <- exp / 2
+            result
+        static member inline Power(a: float, b: float) = System.Math.Pow(a, b)
+        static member inline Power(a: float32, b: float32) = float32(System.Math.Pow(float a, float b))
+        static member inline Power(a: int64, b: int) = 
+            let mutable result = 1L
+            let mutable base' = a
+            let mutable exp = b
+            while exp > 0 do
+                if exp % 2 = 1 then result <- result * base'
+                base' <- base' * base'
+                exp <- exp / 2
+            result
+        static member inline Power(a: decimal, b: int) = 
+            let mutable result = 1M
+            let mutable exp = b
+            while exp > 0 do
+                result <- result * a
+                exp <- exp - 1
+            result
+
+        // Absolute value implementations
+        static member inline Abs(a: int) = abs a
+        static member inline Abs(a: float) = abs a
+        static member inline Abs(a: int64) = abs a
+        static member inline Abs(a: float32) = abs a
+        static member inline Abs(a: decimal) = abs a
+        static member inline Abs(a: int16) = abs a
+
+        // Sign implementations
+        static member inline Sign(a: int) = sign a
+        static member inline Sign(a: float) = sign a
+        static member inline Sign(a: int64) = sign a
+        static member inline Sign(a: float32) = sign a
+        static member inline Sign(a: decimal) = sign a
+        static member inline Sign(a: int16) = sign a
+
+        // Rounding implementations
+        static member inline Ceiling(a: float) = System.Math.Ceiling(a)
+        static member inline Ceiling(a: decimal) = System.Math.Ceiling(a)
+        static member inline Ceiling(a: float32) = float32(System.Math.Ceiling(float a))
+
+        static member inline Floor(a: float) = System.Math.Floor(a)
+        static member inline Floor(a: decimal) = System.Math.Floor(a)
+        static member inline Floor(a: float32) = float32(System.Math.Floor(float a))
+
+        static member inline Round(a: float) = System.Math.Round(a)
+        static member inline Round(a: decimal) = System.Math.Round(a)
+        static member inline Round(a: float32) = float32(System.Math.Round(float a))
     
     /// <summary>
     /// Provides operations for unit-of-measure types with same measure
@@ -126,6 +196,49 @@ module Numerics =
         static member inline DivideScalarUInt64(a: uint64, b: uint64<'u>) = a / b
         static member inline DivideScalarFloat32(a: float32, b: float32<'u>) = a / b
         static member inline DivideScalarDecimal(a: decimal, b: decimal<'u>) = a / b
+
+        // Modulo: unit % scalar implementations
+        static member inline ModuloIntScalar(a: int<'u>, b: int) = a % b
+        static member inline ModuloFloatScalar(a: float<'u>, b: float) = a % b
+        static member inline ModuloInt64Scalar(a: int64<'u>, b: int64) = a % b
+        static member inline ModuloUInt64Scalar(a: uint64<'u>, b: uint64) = a % b
+        static member inline ModuloFloat32Scalar(a: float32<'u>, b: float32) = a % b
+        static member inline ModuloDecimalScalar(a: decimal<'u>, b: decimal) = a % b
+
+        // Modulo: unit % unit implementations (same unit)
+        static member inline ModuloInt(a: int<'u>, b: int<'u>) = a % b
+        static member inline ModuloFloat(a: float<'u>, b: float<'u>) = a % b
+        static member inline ModuloInt64(a: int64<'u>, b: int64<'u>) = a % b
+        static member inline ModuloUInt64(a: uint64<'u>, b: uint64<'u>) = a % b
+        static member inline ModuloFloat32(a: float32<'u>, b: float32<'u>) = a % b
+        static member inline ModuloDecimal(a: decimal<'u>, b: decimal<'u>) = a % b
+
+        // Absolute value implementations for unit-of-measure types
+        static member inline AbsInt(a: int<'u>) = abs a
+        static member inline AbsFloat(a: float<'u>) = abs a
+        static member inline AbsInt64(a: int64<'u>) = abs a
+        static member inline AbsFloat32(a: float32<'u>) = abs a
+        static member inline AbsDecimal(a: decimal<'u>) = abs a
+
+        // Sign implementations for unit-of-measure types
+        static member inline SignInt(a: int<'u>) = sign a
+        static member inline SignFloat(a: float<'u>) = sign a
+        static member inline SignInt64(a: int64<'u>) = sign a
+        static member inline SignFloat32(a: float32<'u>) = sign a
+        static member inline SignDecimal(a: decimal<'u>) = sign a
+
+        // Rounding implementations for unit-of-measure types
+        static member inline CeilingFloat(a: float<'u>) = LanguagePrimitives.FloatWithMeasure<'u>(System.Math.Ceiling(float a))
+        static member inline CeilingDecimal(a: decimal<'u>) = LanguagePrimitives.DecimalWithMeasure<'u>(System.Math.Ceiling(decimal a))
+        static member inline CeilingFloat32(a: float32<'u>) = LanguagePrimitives.Float32WithMeasure<'u>(float32(System.Math.Ceiling(float a)))
+
+        static member inline FloorFloat(a: float<'u>) = LanguagePrimitives.FloatWithMeasure<'u>(System.Math.Floor(float a))
+        static member inline FloorDecimal(a: decimal<'u>) = LanguagePrimitives.DecimalWithMeasure<'u>(System.Math.Floor(decimal a))
+        static member inline FloorFloat32(a: float32<'u>) = LanguagePrimitives.Float32WithMeasure<'u>(float32(System.Math.Floor(float a)))
+
+        static member inline RoundFloat(a: float<'u>) = LanguagePrimitives.FloatWithMeasure<'u>(System.Math.Round(float a))
+        static member inline RoundDecimal(a: decimal<'u>) = LanguagePrimitives.DecimalWithMeasure<'u>(System.Math.Round(decimal a))
+        static member inline RoundFloat32(a: float32<'u>) = LanguagePrimitives.Float32WithMeasure<'u>(float32(System.Math.Round(float a)))
     
     /// <summary>
     /// Provides operations for unit-of-measure types with different measures
@@ -147,6 +260,14 @@ module Numerics =
         static member inline DivideUInt64Units(a: uint64<'u1>, b: uint64<'u2>) = a / b
         static member inline DivideFloat32Units(a: float32<'u1>, b: float32<'u2>) = a / b
         static member inline DivideDecimalUnits(a: decimal<'u1>, b: decimal<'u2>) = a / b
+
+        // Modulo implementations for different unit-of-measure types
+        static member inline ModuloIntUnits(a: int<'u1>, b: int<'u2>) = a % b
+        static member inline ModuloFloatUnits(a: float<'u1>, b: float<'u2>) = a % b
+        static member inline ModuloInt64Units(a: int64<'u1>, b: int64<'u2>) = a % b
+        static member inline ModuloUInt64Units(a: uint64<'u1>, b: uint64<'u2>) = a % b
+        static member inline ModuloFloat32Units(a: float32<'u1>, b: float32<'u2>) = a % b
+        static member inline ModuloDecimalUnits(a: decimal<'u1>, b: decimal<'u2>) = a % b
     
     /// <summary>
     /// Provides collection operations for arrays of primitive types
@@ -260,6 +381,42 @@ module Numerics =
                 let mutable sum = 0us
                 for i = 0 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / uint16 xs.Length
+
+        // New Product implementation for arrays
+        static member inline Product(xs: int[]) = 
+            if xs.Length = 0 then 1
+            else
+                let mutable product = 1
+                for i = 0 to xs.Length - 1 do product <- product * xs.[i]
+                product
+            
+        static member inline Product(xs: float[]) = 
+            if xs.Length = 0 then 1.0
+            else
+                let mutable product = 1.0
+                for i = 0 to xs.Length - 1 do product <- product * xs.[i]
+                product
+            
+        static member inline Product(xs: int64[]) = 
+            if xs.Length = 0 then 1L
+            else
+                let mutable product = 1L
+                for i = 0 to xs.Length - 1 do product <- product * xs.[i]
+                product
+            
+        static member inline Product(xs: float32[]) = 
+            if xs.Length = 0 then 1.0f
+            else
+                let mutable product = 1.0f
+                for i = 0 to xs.Length - 1 do product <- product * xs.[i]
+                product
+                
+        static member inline Product(xs: decimal[]) = 
+            if xs.Length = 0 then 1M
+            else
+                let mutable product = 1M
+                for i = 0 to xs.Length - 1 do product <- product * xs.[i]
+                product
     
     /// <summary>
     /// Provides collection operations for arrays of unit-of-measure types
@@ -335,6 +492,42 @@ module Numerics =
                 let mutable sum = xs.[0]
                 for i = 1 to xs.Length - 1 do sum <- sum + xs.[i]
                 sum / decimal xs.Length
+
+        // New Product implementation for unit-of-measure arrays
+        static member inline ProductInt(xs: int<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericOne<int<'u>>
+            else
+                let mutable product = xs.[0]
+                for i = 1 to xs.Length - 1 do product <- product * LanguagePrimitives.Int32WithMeasure<'u>(int xs.[i])
+                product
+            
+        static member inline ProductFloat(xs: float<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericOne<float<'u>>
+            else
+                let mutable product = xs.[0]
+                for i = 1 to xs.Length - 1 do product <- product * LanguagePrimitives.FloatWithMeasure<'u>(float xs.[i])
+                product
+            
+        static member inline ProductInt64(xs: int64<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericOne<int64<'u>>
+            else
+                let mutable product = xs.[0]
+                for i = 1 to xs.Length - 1 do product <- product * LanguagePrimitives.Int64WithMeasure<'u>(int64 xs.[i])
+                product
+            
+        static member inline ProductFloat32(xs: float32<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericOne<float32<'u>>
+            else
+                let mutable product = xs.[0]
+                for i = 1 to xs.Length - 1 do product <- product * LanguagePrimitives.Float32WithMeasure<'u>(float32 xs.[i])
+                product
+                
+        static member inline ProductDecimal(xs: decimal<'u>[]) = 
+            if xs.Length = 0 then LanguagePrimitives.GenericOne<decimal<'u>>
+            else
+                let mutable product = xs.[0]
+                for i = 1 to xs.Length - 1 do product <- product * LanguagePrimitives.DecimalWithMeasure<'u>(decimal xs.[i])
+                product
     
     /// <summary>
     /// Min/Max operations for various numeric types
@@ -425,6 +618,63 @@ module Numerics =
                 (static member Divide: ^a * ^b -> ^r) (a, b))
     
     /// <summary>
+    /// Entry point for modulo operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Modulo =
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps or MeasureOps or MeasureMeasureOps) : 
+                (static member Modulo: ^a * ^b -> ^r) (a, b))
+
+    /// <summary>
+    /// Entry point for power operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Power =
+        static member inline Invoke(a, b) =
+            ((^a or ^b or BasicOps) : (static member Power: ^a * ^b -> ^r) (a, b))
+
+    /// <summary>
+    /// Entry point for absolute value operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Abs =
+        static member inline Invoke(a) =
+            ((^a or BasicOps or MeasureOps) : (static member Abs: ^a -> ^r) a)
+
+    /// <summary>
+    /// Entry point for sign operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Sign =
+        static member inline Invoke(a) =
+            ((^a or BasicOps or MeasureOps) : (static member Sign: ^a -> int) a)
+
+    /// <summary>
+    /// Entry point for ceiling operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Ceiling =
+        static member inline Invoke(a) =
+            ((^a or BasicOps or MeasureOps) : (static member Ceiling: ^a -> ^r) a)
+
+    /// <summary>
+    /// Entry point for floor operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Floor =
+        static member inline Invoke(a) =
+            ((^a or BasicOps or MeasureOps) : (static member Floor: ^a -> ^r) a)
+
+    /// <summary>
+    /// Entry point for round operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Round =
+        static member inline Invoke(a) =
+            ((^a or BasicOps or MeasureOps) : (static member Round: ^a -> ^r) a)
+    
+    /// <summary>
     /// Entry point for sum operations
     /// </summary>
     [<AbstractClass; Sealed>]
@@ -441,6 +691,15 @@ module Numerics =
         static member inline Invoke(collection) =
             ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
                 (static member Average: ^collection -> ^t) collection)
+
+    /// <summary>
+    /// Entry point for product operations
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type Product =
+        static member inline Invoke(collection) =
+            ((^collection or ^t or ArrayOps or MeasureArrayOps) : 
+                (static member Product: ^collection -> ^t) collection)
     
     // Comparison operations
     
@@ -570,6 +829,68 @@ module Numerics =
     let inline divide a b = Divide.Invoke(a, b)
 
     /// <summary>
+    /// Computes the remainder when dividing the first value by the second value.
+    /// </summary>
+    /// <param name="a">The dividend.</param>
+    /// <param name="b">The divisor.</param>
+    /// <typeparam name="T">The type of the dividend.</typeparam>
+    /// <typeparam name="U">The type of the divisor.</typeparam>
+    /// <typeparam name="V">The resulting type.</typeparam>
+    /// <returns>The remainder of dividing a by b.</returns>
+    let inline modulo a b = Modulo.Invoke(a, b)
+
+    /// <summary>
+    /// Raises the first value to the power of the second value.
+    /// </summary>
+    /// <param name="a">The base value.</param>
+    /// <param name="b">The exponent value.</param>
+    /// <typeparam name="T">The type of the base value.</typeparam>
+    /// <typeparam name="U">The type of the exponent value.</typeparam>
+    /// <typeparam name="V">The resulting type.</typeparam>
+    /// <returns>The result of raising a to the power of b.</returns>
+    let inline power a b = Power.Invoke(a, b)
+
+    /// <summary>
+    /// Computes the absolute value of a number.
+    /// </summary>
+    /// <param name="value">The input value.</param>
+    /// <typeparam name="T">The type of the input value.</typeparam>
+    /// <returns>The absolute value of the input.</returns>
+    let inline abs value = Abs.Invoke(value)
+
+    /// <summary>
+    /// Computes the sign of a number.
+    /// </summary>
+    /// <param name="value">The input value.</param>
+    /// <typeparam name="T">The type of the input value.</typeparam>
+    /// <returns>-1 if the value is negative, 0 if it's zero, and 1 if it's positive.</returns>
+    let inline sign value = Sign.Invoke(value)
+
+    /// <summary>
+    /// Computes the smallest integer greater than or equal to the given value.
+    /// </summary>
+    /// <param name="value">The input value.</param>
+    /// <typeparam name="T">The type of the input value.</typeparam>
+    /// <returns>The ceiling of the input value.</returns>
+    let inline ceiling value = Ceiling.Invoke(value)
+
+    /// <summary>
+    /// Computes the largest integer less than or equal to the given value.
+    /// </summary>
+    /// <param name="value">The input value.</param>
+    /// <typeparam name="T">The type of the input value.</typeparam>
+    /// <returns>The floor of the input value.</returns>
+    let inline floor value = Floor.Invoke(value)
+
+    /// <summary>
+    /// Rounds the given value to the nearest integer.
+    /// </summary>
+    /// <param name="value">The input value.</param>
+    /// <typeparam name="T">The type of the input value.</typeparam>
+    /// <returns>The rounded value.</returns>
+    let inline round value = Round.Invoke(value)
+
+    /// <summary>
     /// Computes the sum of all elements in a collection.
     /// </summary>
     /// <param name="collection">The collection to sum.</param>
@@ -586,6 +907,15 @@ module Numerics =
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
     /// <returns>The average of all elements in the collection.</returns>
     let inline average collection = Average.Invoke(collection)
+
+    /// <summary>
+    /// Computes the product of all elements in a collection.
+    /// </summary>
+    /// <param name="collection">The collection to multiply.</param>
+    /// <typeparam name="Collection">The type of the collection.</typeparam>
+    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+    /// <returns>The product of all elements in the collection.</returns>
+    let inline product collection = Product.Invoke(collection)
     
     /// <summary>
     /// Checks if the first value is less than the second value.
