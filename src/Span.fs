@@ -96,6 +96,10 @@ type ReadOnlySpan<'T> =
         for i = 0 to copyLength - 1 do
             dest.[i] <- this.[i]
 
+/// <summary>
+/// Represents a contiguous region of memory. All functions are exposed through the 
+/// AutoOpen attribute, making them accessible when opening the Alloy namespace.
+/// </summary>
 [<AutoOpen>]
 module Span =
     /// <summary>Creates a Span from an array.</summary>

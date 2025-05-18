@@ -3,7 +3,9 @@ namespace Alloy
 open Alloy.ValueOption
 
 /// <summary>
-/// Module containing Result operations for error handling and composition.
+/// Module containing Result operations for error handling and composition through 
+/// statically resolved type parameters. All functions are exposed through the 
+/// AutoOpen attribute, making them accessible when opening the Alloy namespace.
 /// </summary>
 [<AutoOpen>]
 module Result =

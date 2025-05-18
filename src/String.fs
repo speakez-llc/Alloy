@@ -4,7 +4,9 @@ open Alloy.Core
 open Alloy.Numerics
 
 /// <summary>
-/// Module containing optimized string operations with safe and efficient string manipulation
+/// Provides zero-cost string operations with safe and efficient string manipulation
+/// through statically resolved type parameters. All functions are exposed through the 
+/// AutoOpen attribute, making them accessible when opening the Alloy namespace.
 /// </summary>
 [<AutoOpen>]
 module String =
@@ -19,6 +21,180 @@ module String =
         if i = INT_MAX_VALUE then i
         else add i 1
 
+    /// <summary>
+    /// Provides optimized string operations with .NET compatible signatures
+    /// </summary>
+    [<AbstractClass; Sealed>]
+    type StringOps =
+        /// <summary>Concatenates two strings, ensuring neither is null</summary>
+        static member inline Concat(s1: string, s2: string) : string =
+            let s1Safe = if isNull s1 then "" else s1
+            let s2Safe = if isNull s2 then "" else s2
+            
+            let len1 = s1Safe.Length
+            let len2 = s2Safe.Length
+            let result = Array.zeroCreate<char> (add len1 len2)
+            
+            for i = 0 to len1 - 1 do
+                result.[i] <- s1Safe.[i]
+            
+            for i = 0 to len2 - 1 do
+                result.[add i len1] <- s2Safe.[i]
+                
+            new string(result)
+            
+        /// <summary>Concatenates three strings</summary>
+        static member inline Concat(s1: string, s2: string, s3: string) : string =
+            let s1Safe = if isNull s1 then "" else s1
+            let s2Safe = if isNull s2 then "" else s2
+            let s3Safe = if isNull s3 then "" else s3
+            
+            let len1 = s1Safe.Length
+            let len2 = s2Safe.Length
+            let len3 = s3Safe.Length
+            let totalLen = add (add len1 len2) len3
+            
+            let result = Array.zeroCreate<char> totalLen
+            
+            for i = 0 to len1 - 1 do
+                result.[i] <- s1Safe.[i]
+            
+            for i = 0 to len2 - 1 do
+                result.[add i len1] <- s2Safe.[i]
+                
+            for i = 0 to len3 - 1 do
+                result.[add (add i len1) len2] <- s3Safe.[i]
+                
+            new string(result)
+            
+        /// <summary>Concatenates four strings</summary>
+        static member inline Concat(s1: string, s2: string, s3: string, s4: string) : string =
+            let s1Safe = if isNull s1 then "" else s1
+            let s2Safe = if isNull s2 then "" else s2
+            let s3Safe = if isNull s3 then "" else s3
+            let s4Safe = if isNull s4 then "" else s4
+            
+            let len1 = s1Safe.Length
+            let len2 = s2Safe.Length
+            let len3 = s3Safe.Length
+            let len4 = s4Safe.Length
+            let totalLen = add (add (add len1 len2) len3) len4
+            
+            let result = Array.zeroCreate<char> totalLen
+            
+            let mutable currentIndex = 0
+            
+            for i = 0 to len1 - 1 do
+                result.[currentIndex] <- s1Safe.[i]
+                currentIndex <- increment currentIndex
+                
+            for i = 0 to len2 - 1 do
+                result.[currentIndex] <- s2Safe.[i]
+                currentIndex <- increment currentIndex
+                
+            for i = 0 to len3 - 1 do
+                result.[currentIndex] <- s3Safe.[i]
+                currentIndex <- increment currentIndex
+                
+            for i = 0 to len4 - 1 do
+                result.[currentIndex] <- s4Safe.[i]
+                currentIndex <- increment currentIndex
+                
+            new string(result)
+            
+        /// <summary>Concatenates an array of strings</summary>
+        static member inline Concat(values: string[]) : string =
+            if isNull values || values.Length = 0 then ""
+            elif values.Length = 1 then 
+                if isNull values.[0] then "" else values.[0]
+            else
+                let mutable totalLength = 0
+                for i = 0 to values.Length - 1 do
+                    if not (isNull values.[i]) then
+                        totalLength <- add totalLength values.[i].Length
+                        
+                let result = Array.zeroCreate<char> totalLength
+                let mutable currentIndex = 0
+                
+                for i = 0 to values.Length - 1 do
+                    if not (isNull values.[i]) then
+                        for j = 0 to values.[i].Length - 1 do
+                            result.[currentIndex] <- values.[i].[j]
+                            currentIndex <- increment currentIndex
+                            
+                new string(result)
+        
+        /// <summary>Concatenates a sequence of strings</summary>
+        static member inline Concat(values: seq<string>) : string =
+            if isNull values then ""
+            else
+                let arr = Seq.toArray values
+                StringOps.Concat(arr)
+                
+        /// <summary>Joins multiple strings using a separator</summary>
+        static member inline Join(separator: string, values: string[]) : string =
+            if isNull values || values.Length = 0 then ""
+            elif values.Length = 1 then
+                if isNull values.[0] then "" else values.[0]
+            else
+                let separatorSafe = if isNull separator then "" else separator
+                
+                // Calculate total length
+                let mutable totalLength = 0
+                for i = 0 to values.Length - 1 do
+                    if not (isNull values.[i]) then
+                        totalLength <- add totalLength values.[i].Length
+                
+                // Add space for separators
+                totalLength <- add totalLength (multiply separatorSafe.Length (subtract values.Length 1))
+                
+                let result = Array.zeroCreate<char> totalLength
+                let mutable currentIndex = 0
+                
+                // Add first element
+                if not (isNull values.[0]) then
+                    for j = 0 to values.[0].Length - 1 do
+                        result.[currentIndex] <- values.[0].[j]
+                        currentIndex <- increment currentIndex
+                
+                // Add separator and subsequent elements
+                for i = 1 to values.Length - 1 do
+                    // Add separator
+                    for j = 0 to separatorSafe.Length - 1 do
+                        result.[currentIndex] <- separatorSafe.[j]
+                        currentIndex <- increment currentIndex
+                    
+                    // Add element
+                    if not (isNull values.[i]) then
+                        for j = 0 to values.[i].Length - 1 do
+                            result.[currentIndex] <- values.[i].[j]
+                            currentIndex <- increment currentIndex
+                
+                new string(result)
+                
+        /// <summary>Joins a sequence of strings using a separator</summary>
+        static member inline Join(separator: string, values: seq<string>) : string =
+            if isNull values then ""
+            else
+                let arr = Seq.toArray values
+                StringOps.Join(separator, arr)
+                
+        /// <summary>Joins a sequence of objects using a separator</summary>
+        static member inline Join<'T>(separator: string, values: seq<'T>) : string =
+            if isNull values then ""
+            else
+                let mutable stringValues = [||]
+                for value in values do
+                    let strValue = 
+                        if box value = null then ""
+                        else string value
+                    stringValues <- Array.append stringValues [|strValue|]
+                StringOps.Join(separator, stringValues)
+
+    // --------------------------
+    // Public API
+    // --------------------------
+    
     /// <summary>Gets a value indicating whether the string is a valid number</summary>
     /// <param name="s">The string to check</param>
     /// <returns>True if the string is a valid number</returns>
@@ -46,40 +222,57 @@ module String =
     /// <param name="s1">The first string</param>
     /// <param name="s2">The second string</param>
     /// <returns>The concatenated string</returns>
-    let inline concat (s1: string) (s2: string) : string =
-        let s1Safe = if isNull s1 then "" else s1
-        let s2Safe = if isNull s2 then "" else s2
-        
-        let len1 = s1Safe.Length
-        let len2 = s2Safe.Length
-        let result = Array.zeroCreate<char> (add len1 len2)
-        
-        for i = 0 to len1 - 1 do
-            result.[i] <- s1Safe.[i]
-        
-        for i = 0 to len2 - 1 do
-            result.[add i len1] <- s2Safe.[i]
-            
-        new string(result)
+    let inline concat (s1: string) (s2: string) : string = StringOps.Concat(s1, s2)
+
+    /// <summary>Concatenates three strings</summary>
+    /// <param name="s1">The first string</param>
+    /// <param name="s2">The second string</param>
+    /// <param name="s3">The third string</param>
+    /// <returns>The concatenated string</returns>
+    let inline concat3 (s1: string) (s2: string) (s3: string) : string = 
+        StringOps.Concat(s1, s2, s3)
+
+    /// <summary>Concatenates four strings</summary>
+    /// <param name="s1">The first string</param>
+    /// <param name="s2">The second string</param>
+    /// <param name="s3">The third string</param>
+    /// <param name="s4">The fourth string</param>
+    /// <returns>The concatenated string</returns>
+    let inline concat4 (s1: string) (s2: string) (s3: string) (s4: string) : string = 
+        StringOps.Concat(s1, s2, s3, s4)
+
+    /// <summary>Concatenates an array of strings</summary>
+    /// <param name="values">An array of strings to concatenate</param>
+    /// <returns>The concatenated string</returns>
+    let inline concatArray (values: string[]) : string = 
+        StringOps.Concat(values)
+
+    /// <summary>Concatenates a sequence of strings</summary>
+    /// <param name="values">A sequence of strings to concatenate</param>
+    /// <returns>The concatenated string</returns>
+    let inline concatSeq (values: seq<string>) : string = 
+        StringOps.Concat(values)
 
     /// <summary>Concatenates multiple strings using a separator</summary>
     /// <param name="separator">The string to use as a separator</param>
     /// <param name="values">A sequence of strings to join</param>
     /// <returns>A string consisting of the concatenated elements with separators between them</returns>
-    let inline concatMany (separator: string) (values: seq<string>) : string =
-        if isNull values || Seq.isEmpty values then ""
-        else
-            let mutable result = ""
-            let mutable first = true
-            
-            for value in values do
-                if first then
-                    result <- value
-                    first <- false
-                else
-                    result <- concat (concat result separator) value
-            
-            result
+    let inline join (separator: string) (values: string[]) : string =
+        StringOps.Join(separator, values)
+        
+    /// <summary>Concatenates multiple strings using a separator</summary>
+    /// <param name="separator">The string to use as a separator</param>
+    /// <param name="values">A sequence of strings to join</param>
+    /// <returns>A string consisting of the concatenated elements with separators between them</returns>
+    let inline joinSeq (separator: string) (values: seq<string>) : string =
+        StringOps.Join(separator, values)
+        
+    /// <summary>Concatenates multiple values using a separator</summary>
+    /// <param name="separator">The string to use as a separator</param>
+    /// <param name="values">A sequence of values to join</param>
+    /// <returns>A string consisting of the concatenated elements with separators between them</returns>
+    let inline joinGeneric<'T> (separator: string) (values: seq<'T>) : string =
+        StringOps.Join(separator, values)
     
     /// <summary>Safely gets the character at the specified position</summary>
     /// <param name="index">The index of the character to get</param>
@@ -176,10 +369,10 @@ module String =
             
             if safeLength <= 0 then ""
             else
-                let mutable result = ""
-                for i = startIndex to startIndex + safeLength - 1 do
-                    result <- concat result (string s.[i])
-                result
+                let result = Array.zeroCreate<char> safeLength
+                for i = 0 to safeLength - 1 do
+                    result.[i] <- s.[add startIndex i]
+                new string(result)
     
     /// <summary>Gets a substring from a string to the end</summary>
     /// <param name="startIndex">The zero-based starting position</param>
@@ -189,10 +382,8 @@ module String =
         if isNull s then ""
         elif startIndex < 0 || startIndex >= s.Length then ""
         else
-            let mutable result = ""
-            for i = startIndex to s.Length - 1 do
-                result <- concat result (string s.[i])
-            result
+            let length = subtract s.Length startIndex
+            substring startIndex length s
     
     /// <summary>Determines whether a string contains the specified substring</summary>
     /// <param name="value">The string to seek</param>
@@ -209,10 +400,11 @@ module String =
             while i <= s.Length - value.Length && not found do
                 let mutable matches = true
                 let mutable j = 0
+                
                 while j < value.Length && matches do
-                    if s.[i + j] <> value.[j] then
-                        matches <- false
+                    if s.[i + j] <> value.[j] then matches <- false
                     j <- increment j
+                    
                 if matches then
                     found <- true
                 i <- increment i
@@ -276,19 +468,6 @@ module String =
                 result.[resultIdx] <- substring startIdx (s.Length - startIdx) s
             
             result
-    
-    /// <summary>Joins multiple strings using the specified separator</summary>
-    /// <param name="separator">The string to use as a separator</param>
-    /// <param name="values">An array of strings to join</param>
-    /// <returns>A string consisting of the joined elements</returns>
-    let inline join (separator: string) (values: string[]) : string =
-        if isNull values || values.Length = 0 then ""
-        elif values.Length = 1 then values.[0]
-        else
-            let mutable result = ""
-            for i = 0 to values.Length - 2 do
-                result <- concat (concat result values.[i]) separator
-            concat result values.[values.Length - 1]
     
     /// <summary>Removes all leading and trailing white-space characters</summary>
     /// <param name="s">The string to trim</param>
@@ -421,10 +600,10 @@ module String =
     let inline toLower (s: string) : string =
         if isNull s then ""
         else
-            let mutable result = ""
+            let result = Array.zeroCreate s.Length
             for i = 0 to s.Length - 1 do
-                result <- concat result (string (charToLower s.[i]))
-            result
+                result.[i] <- charToLower s.[i]
+            new string(result)
     
     /// <summary>Converts a string to uppercase</summary>
     /// <param name="s">The string to convert</param>
@@ -432,10 +611,10 @@ module String =
     let inline toUpper (s: string) : string =
         if isNull s then ""
         else
-            let mutable result = ""
+            let result = Array.zeroCreate s.Length
             for i = 0 to s.Length - 1 do
-                result <- concat result (string (charToUpper s.[i]))
-            result
+                result.[i] <- charToUpper s.[i]
+            new string(result)
     
     /// <summary>Returns the index of the first occurrence of the specified substring</summary>
     /// <param name="value">The string to seek</param>
@@ -588,3 +767,11 @@ module String =
         else
             let padding = replicate (subtract totalWidth s.Length) paddingChar
             concat s padding
+            
+    // Compatibility function for backward compatibility
+    /// <summary>Concatenates multiple strings using a separator</summary>
+    /// <param name="separator">The string to use as a separator</param>
+    /// <param name="values">A sequence of strings to join</param>
+    /// <returns>A string consisting of the concatenated elements with separators between them</returns>
+    let inline concatMany (separator: string) (values: seq<string>) : string =
+        joinSeq separator values

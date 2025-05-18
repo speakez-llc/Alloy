@@ -1,7 +1,9 @@
 namespace Alloy
 
 /// <summary>
-/// A zero-allocation, value-type option implementation that avoids heap allocations.
+/// Provides zero-cost value-type option implementation that avoids heap allocations
+/// through statically resolved type parameters. All functions are exposed through the 
+/// AutoOpen attribute, making them accessible when opening the Alloy namespace.
 /// </summary>
 /// <typeparam name="T">The type of the optional value.</typeparam>
 [<Struct>]

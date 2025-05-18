@@ -5,6 +5,11 @@ namespace Alloy
 open Alloy.Core
 open Alloy.Numerics
 
+/// <summary>
+/// Provides zero-cost operators through statically resolved type parameters.
+/// All functions are exposed through the AutoOpen attribute, making them accessible
+/// when opening the Alloy namespace.
+/// </summary>
 [<AutoOpen>]
 module Operators =
     // Function composition operators remain the same
