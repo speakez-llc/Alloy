@@ -1,5 +1,7 @@
 namespace Alloy.Time
 
+open Alloy.ValueOption
+
 /// <summary>
 /// Platform interface definitions for Alloy time functions
 /// </summary>

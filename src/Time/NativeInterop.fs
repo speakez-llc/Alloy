@@ -4,6 +4,7 @@ namespace Alloy.Time
 
 open FSharp.NativeInterop
 open Alloy
+open Alloy.ValueOption
 
 /// <summary>
 /// Native interoperability layer for Alloy, providing P/Invoke-like functionality 
@@ -150,3 +151,13 @@ module NativeInterop =
                     |> fun handle -> NativeLibrary.getFunctionPointer handle import.FunctionName
         let fn = FunctionPointerUtility.getFunctionDelegate2<'T1, 'T2, 'TResult> fnPtr
         fn arg1 arg2
+        
+    /// <summary>
+    /// Invokes a native function with three arguments
+    /// </summary>
+    let inline invokeFunc3<'T1, 'T2, 'T3, 'TResult> 
+        (import: NativeImport<'T1 -> 'T2 -> 'T3 -> 'TResult>) (arg1: 'T1) (arg2: 'T2) (arg3: 'T3) : 'TResult =
+        let fnPtr = NativeLibrary.load import.LibraryName
+                    |> fun handle -> NativeLibrary.getFunctionPointer handle import.FunctionName
+        let fn = FunctionPointerUtility.getFunctionDelegate3<'T1, 'T2, 'T3, 'TResult> fnPtr
+        fn arg1 arg2 arg3

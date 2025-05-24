@@ -18,16 +18,24 @@
     <Compile Include="Binary.fs" />
     <Compile Include="Utf8.fs" />
     <Compile Include="Uuid.fs" />
-    <Compile Include="Memory.fs" />
     <Compile Include="Result.fs" />
-    
+
     <!-- Time subsystem -->
+    <Compile Include="Time\Portable.fs" />
     <Compile Include="Time\Platform.fs" />
     <Compile Include="Time\NativeInterop.fs" />
     <Compile Include="Time\Windows.fs" />
     <Compile Include="Time\Linux.fs" />
     <Compile Include="Time\MacOS.fs" />
     <Compile Include="Time.fs" />
+    
+    <!-- Memory subsystem -->
+    <Compile Include="Memory\Platform.fs" />
+    <Compile Include="Memory\Portable.fs" />
+    <Compile Include="Memory\Windows.fs" />
+    <Compile Include="Memory\Linux.fs" />
+    <Compile Include="Memory\MacOS.fs" />
+    <Compile Include="Memory.fs" />
   </ItemGroup>
 
   <ItemGroup>

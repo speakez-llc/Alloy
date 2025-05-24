@@ -5,6 +5,7 @@ namespace Alloy.Time
 open FSharp.NativeInterop
 open Alloy.Time.NativeInterop
 open Alloy.Time.Platform
+open Alloy.Numerics
 
 /// <summary>
 /// Windows platform-specific time implementation

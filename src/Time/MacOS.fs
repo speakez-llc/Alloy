@@ -1,10 +1,10 @@
 #nowarn "9"
 
-namespace Alloy.Memory
+namespace Alloy.Time
 
 open FSharp.NativeInterop
 open Alloy.Time.NativeInterop
-open Alloy.Memory.Platform
+open Alloy.Memory
 
 /// <summary>
 /// macOS platform-specific memory implementation

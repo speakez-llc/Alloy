@@ -1,6 +1,7 @@
 namespace Alloy
 
 open FSharp.NativeInterop
+open Alloy.Memory.Platform
 
 /// <summary>
 /// Advanced memory types and operations
@@ -41,7 +42,7 @@ module Memory =
         /// </summary>
         /// <param name="value">The byte to write</param>
         member this.Write(value: byte): unit =
-            this.Data[int this.Position] <- value
+            this.Data.[int this.Position] <- value
             this.Position <- add this.Position (intWithUnit<offset> 1)
             
         /// <summary>
@@ -50,7 +51,7 @@ module Memory =
         /// <param name="values">The bytes to write</param>
         member this.WriteBytes(values: byte[]): unit =
             for i = 0 to subtract values.Length 1 do
-                this.Data[add (int this.Position) i] <- values[i]
+                this.Data.[add (int this.Position) i] <- values.[i]
             this.Position <- add this.Position (intWithUnit<offset> values.Length)
             
         /// <summary>
@@ -105,7 +106,7 @@ module Memory =
         
         // Manual copy implementation without System dependencies
         for i = 0 to subtract copyCount 1 do
-            destination.Data[add dstOffset i] <- source.Data[add srcOffset i]
+            destination.Data.[add dstOffset i] <- source.Data.[add srcOffset i]
     
     /// <summary>
     /// Creates a slice of a memory region
@@ -152,7 +153,7 @@ module Memory =
         if lessThan rawOffset 0 || greaterThanOrEqual rawOffset memoryLength then
             failwith "Offset out of bounds"
             
-        memory.Data[add memoryOffset rawOffset]
+        memory.Data.[add memoryOffset rawOffset]
     
     /// <summary>
     /// Writes a byte to memory at the specified offset
@@ -173,7 +174,7 @@ module Memory =
         if lessThan rawOffset 0 || greaterThanOrEqual rawOffset memoryLength then
             failwith "Offset out of bounds"
             
-        memory.Data[add memoryOffset rawOffset] <- value
+        memory.Data.[add memoryOffset rawOffset] <- value
     
     /// <summary>
     /// Gets the absolute address of a location within a region
@@ -207,7 +208,7 @@ module Memory =
         let memoryLength = int memory.Length
         
         for i = 0 to subtract memoryLength 1 do
-            memory.Data[add memoryOffset i] <- value
+            memory.Data.[add memoryOffset i] <- value
         
     /// <summary>
     /// Clears a memory region (fills with zeros)
@@ -238,7 +239,7 @@ module Memory =
             let mutable i = 0
             
             while result && lessThan i memory1Length do
-                if memory1.Data[add memory1Offset i] <> memory2.Data[add memory2Offset i] then
+                if memory1.Data.[add memory1Offset i] <> memory2.Data.[add memory2Offset i] then
                     result <- false
                 i <- add i 1
                 
