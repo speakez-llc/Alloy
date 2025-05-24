@@ -1,19 +1,18 @@
 # Alloy
 
-A zero-cost abstractions library for F# extending fsil with high-performance functional programming capabilities.
+A zero-cost abstractions library for F# extending fsil with additional functional programming capabilities and essential system primitives - all without .NET BCL dependencies.
 
 ## Overview
 
-Alloy builds upon the foundation laid by [fsil](https://github.com/ieviev/fsil), providing additional zero-cost abstractions for numeric operations, collections, and more. Like fsil, Alloy leverages F#'s statically resolved type parameters (SRTPs) to ensure all abstractions are resolved at compile time with no runtime overhead.
+Alloy builds upon the foundation laid by [fsil](https://github.com/ieviev/fsil), providing additional zero-cost abstractions for numeric operations, collections, memory management, time operations, and string manipulation. Like fsil, Alloy leverages F#'s statically resolved type parameters (SRTPs) to ensure all abstractions are resolved at compile time with no runtime overhead.
 
 ## Core Features
 
 - **Zero-cost abstractions**: All operations are inlined and compile to the same code as direct function calls
 - **No runtime overhead**: Compile-time resolution means you get high-level abstractions with low-level performance
 - **Type-safe operations**: Fully leverages F#'s type system for safety and correctness
-- **Trimmable**: Only pay for what you use – unused code is eliminated from your binary
-- **Fable compatible**: Works seamlessly with Fable for F# to JavaScript compilation
-- **Extends fsil**: Builds on the solid foundation of the fsil library's approach
+- **Platform-native implementations**: Direct OS API calls for time and memory operations
+- **Struct-based types**: ValueOption and other types avoid heap allocations
 
 ## From fsil to Alloy
 
@@ -22,265 +21,248 @@ Alloy extends fsil's core functionality with additional operations:
 | fsil provides | Alloy adds |
 |---------------|------------|
 | `map`, `mapi` | `add`, `subtract`, `multiply`, `divide` |
-| `iter`, `iteri` | `min`, `max`, `sum`, `average` |
+| `iter`, `iteri` | `min`, `max`, `sum`, `average`, `product` |
 | `fold` | `filter`, `choose`, `find`, `tryFind` |
-| `zero`, `one` | `equals`, `not_equals`, `default_value` |
-| `is_some`, `value` | `ValueOption<T>` struct type |
+| `zero`, `one` | `power`, `abs`, `sign`, `ceiling`, `floor`, `round` |
 | Basic printing | String manipulation functions |
-| | Result handling functions |
-
-## ValueOption: Zero-Allocation Option Type
-
-Alloy provides a zero-allocation option type called `ValueOption<'T>` that serves as a high-performance alternative to F#'s built-in `Option<'T>`. This implementation is crucial for performance-critical scenarios where every allocation matters.
-
-### Why ValueOption?
-
-Standard F# options are reference types that allocate memory on the managed heap, which can lead to:
-- Increased garbage collection (GC) pressure
-- Memory fragmentation
-- Cache misses due to pointer indirection
-- Performance degradation in tight loops or high-frequency code paths
-
-ValueOption solves these problems by using a struct-based implementation that stays on the stack, eliminating heap allocations entirely while maintaining F#'s familiar option semantics.
-
-### Using ValueOption
-
-```fsharp
-open Alloy
-
-// Creating option values
-let someValue = ValueOption.Some 42
-let noneValue = ValueOption<int>.None
-
-// Checking for values using properties
-if someValue.IsSome then
-    printfn "Value: %d" someValue.Value
-
-// Using module functions (similar to F#'s Option module)
-let doubled = 
-    someValue 
-    |> ValueOption.map (fun x -> x * 2)
-    |> ValueOption.defaultValue 0
-
-// Converting between ValueOption and standard F# options
-let standardOption = ValueOption.toOption someValue
-let backToValueOption = ValueOption.ofOption (Some 42)
-```
-
-### Comparing ValueOption Values
-
-When comparing ValueOption values, use the provided `equals` function rather than relying on the `=` operator directly:
-
-```fsharp
-// Creating two ValueOptions for comparison
-let a = ValueOption.Some 42
-let b = ValueOption.Some 42
-
-// PREFERRED: Use the dedicated equals function
-let areEqual = ValueOption.equals a b  // true
-
-// ALTERNATIVE: Use pattern matching for comparison
-let areEqualByPattern = 
-    match a, b with
-    | Some aVal, Some bVal -> aVal = bVal
-    | None, None -> true
-    | _ -> false
-
-// For testing with Expecto or other frameworks, use property access
-// rather than direct equality comparison
-Expect.isTrue a.IsSome "a should be Some"
-Expect.equal a.Value 42 "a should contain 42"
-```
-
-### How ValueOption Works
-
-Under the hood, ValueOption uses a struct record with carefully designed properties:
-
-```fsharp
-[<Struct>]
-type ValueOption<'T> =
-    private { 
-        hasValue: bool
-        value: 'T 
-    }
-```
-
-1. The `<Struct>` attribute ensures the type is a value type allocated on the stack
-2. The `private` modifier forces consumers to use the type's factory methods
-3. The simple internal representation enables efficient access and manipulation
-4. Property accessors provide a clean, familiar API for working with option values
-
-### Performance Considerations
-
-ValueOption provides significant performance benefits in these scenarios:
-
-- **High-frequency option creation**: In tight loops creating many options
-- **Computation-heavy algorithms**: When processing large datasets with optional values
-- **Memory-constrained environments**: In systems with limited memory or strict GC requirements
-- **Real-time applications**: Where predictable, low-latency execution is critical
-
-As a rule of thumb, prefer ValueOption when you have:
-- Options in performance-critical code paths
-- Collection processing with many optional values
-- High-frequency option creation/manipulation
-- Memory-sensitive applications
-
-For code where performance is less critical, standard F# options might be more ergonomic due to their built-in pattern matching support.
-
-### Integration with Result Type
-
-ValueOption integrates seamlessly with Alloy's Result type:
-
-```fsharp
-// Convert ValueOption to Result
-let result = Result.ofValueOption "Value missing" someValue
-
-// Convert Result back to ValueOption
-let option = Result.toValueOption result
-```
-
-This enables efficient, allocation-free error handling chains.
-
-### Behind the Scenes: Static Resolution
-
-The "static" in ValueOption refers to statically resolved type parameters (SRTPs), an F# feature that enables compile-time resolution of generic operations. This means that operations on ValueOption types have:
-
-1. **Zero virtual method calls**: All method resolution happens at compile time
-2. **Potential for inlining**: The compiler can optimize operations by inlining them
-3. **No type testing or runtime reflection**: Eliminating common sources of overhead
-
-While standard F# generics use runtime type information, statically resolved types determine everything at compile time, allowing for extremely efficient code generation.
+| | Memory primitives with region safety |
+| | Time operations without System.DateTime |
+| | Binary conversions for serialization |
+| | UTF-8 encoding/decoding |
+| | UUID v4/v5 generation |
+| | Result type for error handling |
+| | Span operations |
 
 ## Installation
 
-```
+```bash
 dotnet add package Alloy
 ```
 
 ## Basic Usage
 
+### Numeric Operations
+
 ```fsharp
 open Alloy
 
-// Numeric operations
-let sum = add 5 3          // 8
-let product = multiply 4 7 // 28
-
-// Using operators
-let result = 10 + 5 * 2    // 20
+// Basic arithmetic - works with any numeric type
+let result = add 10 5           // 15
+let product = multiply 4 7      // 28
+let powered = power 2 8         // 256
 
 // Collection operations
 let numbers = [|1; 2; 3; 4; 5|]
-let doubled = map (fun x -> x * 2) numbers    // [|2; 4; 6; 8; 10|]
-let evens = filter (fun x -> x % 2 = 0) numbers // [|2; 4|]
-let total = sum numbers    // 15
-let avg = average numbers  // 3
+let total = sum numbers         // 15
+let avg = average numbers       // 3
+let prod = product numbers      // 120
 
-// ValueOption type - zero allocation option type
-let maybeValue = ValueOption.Some 42
-let hasValue = maybeValue.IsSome  // true
-let value = maybeValue.Value      // 42
-
-// String operations
-let greeting = "  Hello, World!  "
-let trimmed = String.trim greeting  // "Hello, World!"
-let parts = String.split ',' trimmed // [|"Hello"; " World!"|]
+// Works with units of measure
+[<Measure>] type meter
+let distance = 100<meter>
+let doubled = multiply distance 2  // 200<meter>
 ```
 
-## Advanced Usage
-
-### Extending Types with Custom Operations
-
-You can extend Alloy to work with your own types by implementing the appropriate static members:
+### ValueOption - Stack-Allocated Options
 
 ```fsharp
-// Define a custom type
+// Zero heap allocations - lives on the stack
+let maybeValue = ValueOption.Some 42
+let empty = ValueOption<string>.None
+
+// Pattern matching
+match maybeValue with
+| Some v -> printfn "Value: %d" v
+| None -> printfn "No value"
+
+// Functional operations
+let result = 
+    maybeValue
+    |> ValueOption.map (fun x -> x * 2)
+    |> ValueOption.defaultValue 0
+```
+
+### Memory Operations
+
+Type-safe memory operations with region tracking:
+
+```fsharp
+// Create memory regions
+let data = Array.zeroCreate<byte> 1024
+let memory = Memory.fromArray<int, region> data
+
+// Safe memory operations
+Memory.writeByte memory 0<offset> 42uy
+let value = Memory.readByte memory 0<offset>
+
+// Memory slicing
+let slice = Memory.slice memory 10<offset> 100<bytes>
+```
+
+### Time Operations
+
+Platform-native time without System.DateTime:
+
+```fsharp
+open Alloy.Time
+
+// High-resolution timing
+let start = Time.highResolutionTicks()
+// ... perform work ...
+let elapsed = Time.elapsedTime start (Time.highResolutionTicks())
+
+// Basic time operations
+let now = Time.now()
+let unix = Time.currentUnixTimestamp()
+
+// Create specific dates
+let date = Time.createDateTime 2025 5 24 14 30 0 0
+```
+
+### String Operations
+
+Essential string manipulation without System.String methods:
+
+```fsharp
+// Core string operations
+let text = "  Hello, World!  "
+let trimmed = String.trim text
+let parts = String.split ',' "a,b,c"
+let joined = String.join ", " [|"x"; "y"; "z"|]
+
+// Efficient concatenation
+let message = String.concat3 "Hello" " " "World"
+
+// String inspection
+let hasPrefix = String.startsWith "Hello" text
+let contains = String.contains "World" text
+```
+
+### Binary Operations
+
+Low-level binary conversions:
+
+```fsharp
+// Bit-pattern preserving conversions
+let bits = Binary.singleToInt32Bits 3.14f
+let restored = Binary.int32BitsToSingle bits
+
+// Byte conversions
+let bytes = Binary.getInt32Bytes 42
+let value = Binary.toInt32 bytes 0
+```
+
+### UTF-8 Encoding
+
+Pure F# UTF-8 implementation:
+
+```fsharp
+// Encode/decode without System.Text.Encoding
+let utf8 = Utf8.getBytes "Hello, 世界!"
+let text = Utf8.getString utf8
+```
+
+### UUID Generation
+
+RFC 4122 compliant UUID implementation:
+
+```fsharp
+open Alloy.Uuid
+
+// Generate UUIDs
+let id = Uuid.newUuid()              // v4 random
+let strId = Uuid.toString id         // "550e8400-e29b-41d4-a716-446655440000"
+let parsed = Uuid.fromString strId
+```
+
+## Platform Support
+
+Alloy provides platform-specific implementations for:
+- **Windows**: kernel32.dll APIs
+- **Linux**: libc APIs
+- **macOS**: libSystem APIs
+- **Portable**: Pure F# fallbacks
+
+Platform selection is automatic and transparent.
+
+## Design Principles
+
+### Zero-Cost Abstractions
+
+All Alloy operations compile to the same machine code as hand-written implementations:
+
+```fsharp
+// This Alloy code:
+let result = add x y
+
+// Compiles to the same assembly as:
+let result = x + y
+```
+
+### Type Safety with Units of Measure
+
+Alloy preserves F#'s units of measure throughout operations:
+
+```fsharp
+[<Measure>] type second
+[<Measure>] type meter
+
+let time = 10<second>
+let distance = 50<meter>
+let speed = divide distance time  // 5<meter/second>
+```
+
+### Memory Safety
+
+Region-based types prevent memory errors at compile time:
+
+```fsharp
+[<Measure>] type heap
+[<Measure>] type stack
+
+// Types ensure you can't mix memory regions
+let heapMem = Memory.fromArray<int, heap> heapData
+let stackMem = Memory.fromArray<int, stack> stackData
+// Memory.copy heapMem stackMem 10<bytes>  // Compile error!
+```
+
+## Performance
+
+- **Inlined operations**: Everything is inlined by the F# compiler
+- **Stack allocation**: ValueOption and similar types avoid heap allocation
+- **Direct platform calls**: No abstraction layers for system operations
+- **Cache-friendly**: Struct types improve memory locality
+
+## Extending Alloy
+
+Add Alloy operations to your own types:
+
+```fsharp
 type Vector2D = { X: float; Y: float }
 
-// Implement operations
+// Implement required static members
 type Vector2D with
-    static member Add(a: Vector2D, b: Vector2D) = 
-        { X = a.X + b.X; Y = a.Y + b.Y }
-    static member Subtract(a: Vector2D, b: Vector2D) = 
-        { X = a.X - b.X; Y = a.Y - b.Y }
+    static member Add(a, b) = { X = a.X + b.X; Y = a.Y + b.Y }
     static member Zero = { X = 0.0; Y = 0.0 }
 
-// Now you can use Alloy's operations with your type
+// Now works with Alloy operations
 let v1 = { X = 3.0; Y = 4.0 }
 let v2 = { X = 1.0; Y = 2.0 }
-let v3 = add v1 v2      // { X = 4.0; Y = 6.0 }
-let origin = zero<Vector2D>  // { X = 0.0; Y = 0.0 }
-```
-
-### Composition
-
-Alloy functions compose naturally, just like standard F# functions:
-
-```fsharp
-let numbers = [|1..10|]
-
-// Composition using operators
-let result = numbers
-             |> filter (fun x -> x % 2 = 0)  // Keep even numbers
-             |> map (fun x -> x * x)         // Square them
-             |> sum                          // Sum the squares
-
-// Equivalent to: sum (map (fun x -> x * x) (filter (fun x -> x % 2 = 0) numbers))
+let v3 = add v1 v2  // { X = 4.0; Y = 6.0 }
 ```
 
 ## API Reference
 
-### Numeric Operations
-- `add a b` - Adds two values
-- `subtract a b` - Subtracts b from a
-- `multiply a b` - Multiplies two values
-- `divide a b` - Divides a by b
-- `min a b` - Returns the minimum of two values
-- `max a b` - Returns the maximum of two values
-- `sum collection` - Sums the elements of a collection
-- `average collection` - Calculates the average of a collection
+See the [full API documentation](https://github.com/your-repo/alloy/wiki/API) for detailed information on all modules:
 
-### Collection Operations
-- `map f collection` - Maps a function over a collection
-- `mapi f collection` - Maps an indexed function over a collection
-- `iter f collection` - Iterates a function over a collection
-- `iteri f collection` - Iterates an indexed function over a collection
-- `fold folder state collection` - Folds over a collection
-- `filter predicate collection` - Filters elements of a collection
-- `choose chooser collection` - Chooses elements of a collection with transformation
-- `find predicate collection` - Finds an element in a collection
-- `tryFind predicate collection` - Tries to find an element in a collection
-
-### Operators
-- `+` - Addition
-- `-` - Subtraction
-- `*` - Multiplication
-- `/` - Division
-- `=` - Equality
-- `<>` - Inequality
-
-### ValueOption
-A struct-based option type for zero-allocation operations:
-- `ValueOption.Some value` - Creates a Some value
-- `ValueOption<'T>.None` - Creates a None value
-- `option.IsSome` - Checks if the option has a value
-- `option.IsNone` - Checks if the option is None
-- `option.Value` - Gets the value (throws if None)
-- `ValueOption.map f opt` - Transforms the value if Some
-- `ValueOption.bind f opt` - Applies a function that returns an option
-- `ValueOption.defaultValue d opt` - Returns the value or default
-- `ValueOption.defaultWith f opt` - Returns the value or applies a function
-- `ValueOption.equals a b` - Checks equality between two ValueOptions
-- `ValueOption.ofOption opt` - Converts from a standard F# option
-- `ValueOption.toOption opt` - Converts to a standard F# option
-
-### String Operations
-- `String.length s` - Gets the length of a string
-- `String.isEmpty s` - Checks if a string is empty
-- `String.trim s` - Trims whitespace from a string
-- `String.split separator s` - Splits a string by a separator
-- And many more string manipulation functions
-
-## Performance
-
-Being a zero-cost abstraction library, Alloy operations compile to the same code as if you wrote the operations directly. This means you get the benefits of high-level abstractions with the performance of low-level code.
+- **Core**: Extended operations from fsil
+- **Numerics**: Arithmetic and mathematical operations
+- **String**: String manipulation functions
+- **ValueOption**: Stack-allocated option type
+- **Memory**: Type-safe memory operations
+- **Time**: Platform-native time operations
+- **Binary**: Binary conversion utilities
+- **Utf8**: UTF-8 encoding/decoding
+- **Uuid**: UUID generation and parsing
+- **Result**: Functional error handling
+- **Span**: Contiguous memory views

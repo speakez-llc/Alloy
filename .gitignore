@@ -53,3 +53,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 .fake
+src/.idea/.idea.src.dir/.idea/projectSettingsUpdater.xml
+src/.idea/.idea.src.dir/.idea/workspace.xml
