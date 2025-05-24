@@ -25,7 +25,7 @@ module Uuid =
     let private byteToHex (b: byte): char[] =
         let hi = int (b >>> 4) &&& 0xF
         let lo = int b &&& 0xF
-        [| hexChars.[hi]; hexChars.[lo] |]
+        [| hexChars[hi]; hexChars[lo] |]
     
     /// <summary>
     /// Function to convert a hex character to its numeric value
@@ -57,13 +57,13 @@ module Uuid =
         
         // Generate pseudo-random bytes
         for i = 0 to 15 do
-            bytes.[i] <- byte (i * 17 % 256)
+            bytes[i] <- byte (i * 17 % 256)
         
         // Set version to 4 (random)
-        bytes.[6] <- bytes.[6] &&& 0x0Fuy ||| 0x40uy
+        bytes[6] <- bytes[6] &&& 0x0Fuy ||| 0x40uy
         
         // Set variant to RFC 4122
-        bytes.[8] <- bytes.[8] &&& 0x3Fuy ||| 0x80uy
+        bytes[8] <- bytes[8] &&& 0x3Fuy ||| 0x80uy
         
         { Data = bytes }
     
@@ -77,7 +77,7 @@ module Uuid =
         // Convert name to bytes using UTF-8 encoding
         let nameBytes = 
             Array.init name.Length (fun i -> 
-                let c = int name.[i]
+                let c = int name[i]
                 if c < 128 then byte c else byte '?')
         
         // Combine namespace and name
@@ -87,17 +87,17 @@ module Uuid =
         // For this example, we'll just do a simple hash
         let hash = Array.zeroCreate 16
         for i = 0 to 15 do
-            hash.[i] <- 
+            hash[i] <- 
                 if i < data.Length then
-                    data.[i]
+                    data[i]
                 else
                     byte (i * 3 % 256)
         
         // Set version to 5
-        hash.[6] <- hash.[6] &&& 0x0Fuy ||| 0x50uy
+        hash[6] <- hash[6] &&& 0x0Fuy ||| 0x50uy
         
         // Set variant to RFC 4122
-        hash.[8] <- hash.[8] &&& 0x3Fuy ||| 0x80uy
+        hash[8] <- hash[8] &&& 0x3Fuy ||| 0x80uy
         
         { Data = hash }
     
@@ -115,39 +115,39 @@ module Uuid =
         
         // First group (8 chars)
         for i = 0 to 7 do
-            result.[i] <- hex.[pos]
+            result[i] <- hex[pos]
             pos <- pos + 1
             
         // Add hyphen
-        result.[8] <- '-'
+        result[8] <- '-'
         
         // Second group (4 chars)
         for i = 9 to 12 do
-            result.[i] <- hex.[pos]
+            result[i] <- hex[pos]
             pos <- pos + 1
             
         // Add hyphen
-        result.[13] <- '-'
+        result[13] <- '-'
         
         // Third group (4 chars)
         for i = 14 to 17 do
-            result.[i] <- hex.[pos]
+            result[i] <- hex[pos]
             pos <- pos + 1
             
         // Add hyphen
-        result.[18] <- '-'
+        result[18] <- '-'
         
         // Fourth group (4 chars)
         for i = 19 to 22 do
-            result.[i] <- hex.[pos]
+            result[i] <- hex[pos]
             pos <- pos + 1
             
         // Add hyphen
-        result.[23] <- '-'
+        result[23] <- '-'
         
         // Fifth group (12 chars)
         for i = 24 to 35 do
-            result.[i] <- hex.[pos]
+            result[i] <- hex[pos]
             pos <- pos + 1
         
         new string(result)
@@ -163,7 +163,7 @@ module Uuid =
             failwith $"Invalid UUID format: expected 36 characters, got {s.Length}"
         
         // Check hyphens are in the right places
-        if s.[8] <> '-' || s.[13] <> '-' || s.[18] <> '-' || s.[23] <> '-' then
+        if s[8] <> '-' || s[13] <> '-' || s[18] <> '-' || s[23] <> '-' then
             failwith "Invalid UUID format: incorrect hyphen placement"
         
         let bytes = Array.zeroCreate 16
@@ -173,9 +173,9 @@ module Uuid =
         let processGroup (startIndex: int) (length: int): unit =
             let mutable i = startIndex
             while i < startIndex + length do
-                let hi = hexToInt s.[i]
-                let lo = hexToInt s.[i + 1]
-                bytes.[byteIndex] <- byte ((hi <<< 4) ||| lo)
+                let hi = hexToInt s[i]
+                let lo = hexToInt s[i + 1]
+                bytes[byteIndex] <- byte ((hi <<< 4) ||| lo)
                 byteIndex <- byteIndex + 1
                 i <- i + 2
         
@@ -207,7 +207,7 @@ module Uuid =
         let mutable i = 0
         
         while result && i < 16 do
-            if uuid1.Data.[i] <> uuid2.Data.[i] then
+            if uuid1.Data[i] <> uuid2.Data[i] then
                 result <- false
             i <- i + 1
             
@@ -239,7 +239,7 @@ module Uuid =
     /// <param name="uuid">The UUID</param>
     /// <returns>The UUID version (1-5)</returns>
     let getVersion (uuid: Uuid): int =
-        int ((uuid.Data.[6] &&& 0xF0uy) >>> 4)
+        int ((uuid.Data[6] &&& 0xF0uy) >>> 4)
     
     /// <summary>
     /// Gets the variant of a UUID
@@ -247,7 +247,7 @@ module Uuid =
     /// <param name="uuid">The UUID</param>
     /// <returns>The UUID variant (0-3)</returns>
     let getVariant (uuid: Uuid): int =
-        let v = int uuid.Data.[8]
+        let v = int uuid.Data[8]
         if (v &&& 0x80) = 0 then 0 // Reserved for NCS backward compatibility
         elif (v &&& 0xC0) = 0x80 then 1 // RFC 4122
         elif (v &&& 0xE0) = 0xC0 then 2 // Reserved for Microsoft

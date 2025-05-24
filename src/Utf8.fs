@@ -17,7 +17,7 @@ module Utf8 =
             let result = ResizeArray<byte>(estimatedSize)
             
             for i = 0 to s.Length - 1 do
-                let c = int (s.[i])
+                let c = int (s[i])
                 if c < 0x80 then
                     // 1-byte sequence: 0xxxxxxx
                     result.Add(byte c)
@@ -52,7 +52,7 @@ module Utf8 =
             let mutable i = 0
             
             while i < bytes.Length do
-                let b = int bytes.[i]
+                let b = int bytes[i]
                 
                 if b < 0x80 then
                     // 1-byte sequence
@@ -61,7 +61,7 @@ module Utf8 =
                 elif b < 0xE0 then
                     // 2-byte sequence
                     if i + 1 < bytes.Length then
-                        let b2 = int bytes.[i + 1]
+                        let b2 = int bytes[i + 1]
                         let c = ((b &&& 0x1F) <<< 6) ||| (b2 &&& 0x3F)
                         chars.Add(char c)
                         i <- i + 2
@@ -71,8 +71,8 @@ module Utf8 =
                 elif b < 0xF0 then
                     // 3-byte sequence
                     if i + 2 < bytes.Length then
-                        let b2 = int bytes.[i + 1]
-                        let b3 = int bytes.[i + 2]
+                        let b2 = int bytes[i + 1]
+                        let b3 = int bytes[i + 2]
                         let c = ((b &&& 0x0F) <<< 12) ||| ((b2 &&& 0x3F) <<< 6) ||| (b3 &&& 0x3F)
                         chars.Add(char c)
                         i <- i + 3
@@ -82,9 +82,9 @@ module Utf8 =
                 else
                     // 4-byte sequence
                     if i + 3 < bytes.Length then
-                        let b2 = int bytes.[i + 1]
-                        let b3 = int bytes.[i + 2]
-                        let b4 = int bytes.[i + 3]
+                        let b2 = int bytes[i + 1]
+                        let b3 = int bytes[i + 2]
+                        let b4 = int bytes[i + 3]
                         let c = ((b &&& 0x07) <<< 18) ||| ((b2 &&& 0x3F) <<< 12) ||| 
                                 ((b3 &&& 0x3F) <<< 6) ||| (b4 &&& 0x3F)
                         // Handle surrogate pairs for characters outside BMP
@@ -114,7 +114,7 @@ module Utf8 =
             let mutable length = 0
             
             for i = 0 to s.Length - 1 do
-                let c = int (s.[i])
+                let c = int (s[i])
                 if c < 0x80 then
                     // 1-byte sequence
                     length <- length + 1

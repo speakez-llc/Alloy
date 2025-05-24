@@ -36,10 +36,10 @@ module String =
             let result = Array.zeroCreate<char> (add len1 len2)
             
             for i = 0 to len1 - 1 do
-                result.[i] <- s1Safe.[i]
+                result[i] <- s1Safe[i]
             
             for i = 0 to len2 - 1 do
-                result.[add i len1] <- s2Safe.[i]
+                result[add i len1] <- s2Safe[i]
                 
             new string(result)
             
@@ -57,13 +57,13 @@ module String =
             let result = Array.zeroCreate<char> totalLen
             
             for i = 0 to len1 - 1 do
-                result.[i] <- s1Safe.[i]
+                result[i] <- s1Safe[i]
             
             for i = 0 to len2 - 1 do
-                result.[add i len1] <- s2Safe.[i]
+                result[add i len1] <- s2Safe[i]
                 
             for i = 0 to len3 - 1 do
-                result.[add (add i len1) len2] <- s3Safe.[i]
+                result[add (add i len1) len2] <- s3Safe[i]
                 
             new string(result)
             
@@ -85,19 +85,19 @@ module String =
             let mutable currentIndex = 0
             
             for i = 0 to len1 - 1 do
-                result.[currentIndex] <- s1Safe.[i]
+                result[currentIndex] <- s1Safe[i]
                 currentIndex <- increment currentIndex
                 
             for i = 0 to len2 - 1 do
-                result.[currentIndex] <- s2Safe.[i]
+                result[currentIndex] <- s2Safe[i]
                 currentIndex <- increment currentIndex
                 
             for i = 0 to len3 - 1 do
-                result.[currentIndex] <- s3Safe.[i]
+                result[currentIndex] <- s3Safe[i]
                 currentIndex <- increment currentIndex
                 
             for i = 0 to len4 - 1 do
-                result.[currentIndex] <- s4Safe.[i]
+                result[currentIndex] <- s4Safe[i]
                 currentIndex <- increment currentIndex
                 
             new string(result)
@@ -106,20 +106,20 @@ module String =
         static member inline Concat(values: string[]) : string =
             if isNull values || values.Length = 0 then ""
             elif values.Length = 1 then 
-                if isNull values.[0] then "" else values.[0]
+                if isNull values[0] then "" else values[0]
             else
                 let mutable totalLength = 0
                 for i = 0 to values.Length - 1 do
-                    if not (isNull values.[i]) then
-                        totalLength <- add totalLength values.[i].Length
+                    if not (isNull values[i]) then
+                        totalLength <- add totalLength values[i].Length
                         
                 let result = Array.zeroCreate<char> totalLength
                 let mutable currentIndex = 0
                 
                 for i = 0 to values.Length - 1 do
-                    if not (isNull values.[i]) then
-                        for j = 0 to values.[i].Length - 1 do
-                            result.[currentIndex] <- values.[i].[j]
+                    if not (isNull values[i]) then
+                        for j = 0 to values[i].Length - 1 do
+                            result[currentIndex] <- values[i][j]
                             currentIndex <- increment currentIndex
                             
                 new string(result)
@@ -135,15 +135,15 @@ module String =
         static member inline Join(separator: string, values: string[]) : string =
             if isNull values || values.Length = 0 then ""
             elif values.Length = 1 then
-                if isNull values.[0] then "" else values.[0]
+                if isNull values[0] then "" else values[0]
             else
                 let separatorSafe = if isNull separator then "" else separator
                 
                 // Calculate total length
                 let mutable totalLength = 0
                 for i = 0 to values.Length - 1 do
-                    if not (isNull values.[i]) then
-                        totalLength <- add totalLength values.[i].Length
+                    if not (isNull values[i]) then
+                        totalLength <- add totalLength values[i].Length
                 
                 // Add space for separators
                 totalLength <- add totalLength (multiply separatorSafe.Length (subtract values.Length 1))
@@ -152,22 +152,22 @@ module String =
                 let mutable currentIndex = 0
                 
                 // Add first element
-                if not (isNull values.[0]) then
-                    for j = 0 to values.[0].Length - 1 do
-                        result.[currentIndex] <- values.[0].[j]
+                if not (isNull values[0]) then
+                    for j = 0 to values[0].Length - 1 do
+                        result[currentIndex] <- values[0][j]
                         currentIndex <- increment currentIndex
                 
                 // Add separator and subsequent elements
                 for i = 1 to values.Length - 1 do
                     // Add separator
                     for j = 0 to separatorSafe.Length - 1 do
-                        result.[currentIndex] <- separatorSafe.[j]
+                        result[currentIndex] <- separatorSafe[j]
                         currentIndex <- increment currentIndex
                     
                     // Add element
-                    if not (isNull values.[i]) then
-                        for j = 0 to values.[i].Length - 1 do
-                            result.[currentIndex] <- values.[i].[j]
+                    if not (isNull values[i]) then
+                        for j = 0 to values[i].Length - 1 do
+                            result[currentIndex] <- values[i][j]
                             currentIndex <- increment currentIndex
                 
                 new string(result)
@@ -202,21 +202,21 @@ module String =
         if isNull s || s.Length = 0 then false
         else
             let mutable valid = true
-            let mutable i = if s.[0] = '-' || s.[0] = '+' then 1 else 0
+            let mutable i = if s[0] = '-' || s[0] = '+' then 1 else 0
             let mutable hasDecimal = false
             
             if i = s.Length then false
             else
                 while i < s.Length && valid do
-                    if s.[i] = '.' && not hasDecimal then
+                    if s[i] = '.' && not hasDecimal then
                         hasDecimal <- true
                         i <- increment i
                     else
-                        match parseDigit s.[i] with
+                        match parseDigit s[i] with
                         | Some _ -> i <- increment i
                         | None -> valid <- false
                         
-                valid && (if hasDecimal then i > (if s.[0] = '-' || s.[0] = '+' then 2 else 1) else i > (if s.[0] = '-' || s.[0] = '+' then 1 else 0))
+                valid && (if hasDecimal then i > (if s[0] = '-' || s[0] = '+' then 2 else 1) else i > (if s[0] = '-' || s[0] = '+' then 1 else 0))
     
     /// <summary>Concatenates two strings, ensuring neither is null</summary>
     /// <param name="s1">The first string</param>
@@ -280,7 +280,7 @@ module String =
     /// <returns>The character at the specified position, or ValueNone if invalid</returns>
     let inline charAt (index: int) (s: string) : ValueOption<char> =
         if isNull s || index < 0 || index >= s.Length then None<char>
-        else Some s.[index]
+        else Some s[index]
     
     /// <summary>Checks if a character is a digit</summary>
     /// <param name="c">The character to check</param>
@@ -297,7 +297,7 @@ module String =
             let mutable allDigits = true
             let mutable i = 0
             while i < s.Length && allDigits do
-                if not (isDigit s.[i]) then
+                if not (isDigit s[i]) then
                     allDigits <- false
                 i <- increment i
             allDigits
@@ -335,7 +335,7 @@ module String =
             let mutable onlyWhitespace = true
             let mutable i = 0
             while i < s.Length && onlyWhitespace do
-                if not (isWhiteSpace s.[i]) then
+                if not (isWhiteSpace s[i]) then
                     onlyWhitespace <- false
                 i <- add i 1
             onlyWhitespace
@@ -371,7 +371,7 @@ module String =
             else
                 let result = Array.zeroCreate<char> safeLength
                 for i = 0 to safeLength - 1 do
-                    result.[i] <- s.[add startIndex i]
+                    result[i] <- s[add startIndex i]
                 new string(result)
     
     /// <summary>Gets a substring from a string to the end</summary>
@@ -402,7 +402,7 @@ module String =
                 let mutable j = 0
                 
                 while j < value.Length && matches do
-                    if s.[i + j] <> value.[j] then matches <- false
+                    if s[i + j] <> value[j] then matches <- false
                     j <- increment j
                     
                 if matches then
@@ -419,20 +419,20 @@ module String =
         else
             let mutable count = 1
             for i = 0 to s.Length - 1 do
-                if s.[i] = separator then count <- increment count
+                if s[i] = separator then count <- increment count
             
             let result = Array.zeroCreate count
             let mutable startIdx = 0
             let mutable resultIdx = 0
             
             for i = 0 to s.Length - 1 do
-                if s.[i] = separator then
-                    result.[resultIdx] <- substring startIdx (i - startIdx) s
+                if s[i] = separator then
+                    result[resultIdx] <- substring startIdx (i - startIdx) s
                     resultIdx <- increment resultIdx
                     startIdx <- i + 1
             
             if startIdx <= s.Length then
-                result.[resultIdx] <- substring startIdx (s.Length - startIdx) s
+                result[resultIdx] <- substring startIdx (s.Length - startIdx) s
             
             result
     
@@ -447,25 +447,25 @@ module String =
             let isSeparator (c: char) =
                 let mutable result = false
                 for i = 0 to separators.Length - 1 do
-                    if separators.[i] = c then result <- true
+                    if separators[i] = c then result <- true
                 result
             
             let mutable count = 1
             for i = 0 to s.Length - 1 do
-                if isSeparator s.[i] then count <- increment count
+                if isSeparator s[i] then count <- increment count
             
             let result = Array.zeroCreate count
             let mutable startIdx = 0
             let mutable resultIdx = 0
             
             for i = 0 to s.Length - 1 do
-                if isSeparator s.[i] then
-                    result.[resultIdx] <- substring startIdx (i - startIdx) s
+                if isSeparator s[i] then
+                    result[resultIdx] <- substring startIdx (i - startIdx) s
                     resultIdx <- increment resultIdx
                     startIdx <- i + 1
             
             if startIdx <= s.Length then
-                result.[resultIdx] <- substring startIdx (s.Length - startIdx) s
+                result[resultIdx] <- substring startIdx (s.Length - startIdx) s
             
             result
     
@@ -478,10 +478,10 @@ module String =
             let mutable startIdx = 0
             let mutable endIdx = s.Length - 1
             
-            while startIdx <= endIdx && isWhiteSpace s.[startIdx] do
+            while startIdx <= endIdx && isWhiteSpace s[startIdx] do
                 startIdx <- increment startIdx
                 
-            while endIdx >= startIdx && isWhiteSpace s.[endIdx] do
+            while endIdx >= startIdx && isWhiteSpace s[endIdx] do
                 endIdx <- subtract endIdx 1
                 
             if startIdx > endIdx then ""
@@ -494,7 +494,7 @@ module String =
         if isNull s then ""
         else
             let mutable startIdx = 0
-            while startIdx < s.Length && isWhiteSpace s.[startIdx] do
+            while startIdx < s.Length && isWhiteSpace s[startIdx] do
                 startIdx <- increment startIdx
                 
             if startIdx = s.Length then ""
@@ -507,7 +507,7 @@ module String =
         if isNull s then ""
         else
             let mutable endIdx = subtract s.Length 1
-            while endIdx >= 0 && isWhiteSpace s.[endIdx] do
+            while endIdx >= 0 && isWhiteSpace s[endIdx] do
                 endIdx <- subtract endIdx 1
                 
             if endIdx < 0 then ""
@@ -530,14 +530,14 @@ module String =
                 let mutable j = 0
                 
                 while j < oldValue.Length && isMatch do
-                    if s.[i + j] <> oldValue.[j] then isMatch <- false
+                    if s[i + j] <> oldValue[j] then isMatch <- false
                     j <- increment j
                     
                 if isMatch then
                     result <- concat result newValue
                     i <- add i oldValue.Length
                 else
-                    result <- concat result (string s.[i])
+                    result <- concat result (string s[i])
                     i <- increment i
                     
             result
@@ -555,7 +555,7 @@ module String =
             let mutable i = 0
             
             while i < prefix.Length && matches do
-                if s.[i] <> prefix.[i] then matches <- false
+                if s[i] <> prefix[i] then matches <- false
                 i <- increment i
                 
             matches
@@ -573,7 +573,7 @@ module String =
             let mutable i = 0
             
             while i < suffix.Length && matches do
-                if s.[s.Length - suffix.Length + i] <> suffix.[i] then matches <- false
+                if s[s.Length - suffix.Length + i] <> suffix[i] then matches <- false
                 i <- increment i
                 
             matches
@@ -602,7 +602,7 @@ module String =
         else
             let result = Array.zeroCreate s.Length
             for i = 0 to s.Length - 1 do
-                result.[i] <- charToLower s.[i]
+                result[i] <- charToLower s[i]
             new string(result)
     
     /// <summary>Converts a string to uppercase</summary>
@@ -613,7 +613,7 @@ module String =
         else
             let result = Array.zeroCreate s.Length
             for i = 0 to s.Length - 1 do
-                result.[i] <- charToUpper s.[i]
+                result[i] <- charToUpper s[i]
             new string(result)
     
     /// <summary>Returns the index of the first occurrence of the specified substring</summary>
@@ -633,7 +633,7 @@ module String =
                 let mutable j = 0
                 
                 while j < value.Length && matches do
-                    if s.[i + j] <> value.[j] then matches <- false
+                    if s[i + j] <> value[j] then matches <- false
                     j <- increment j
                     
                 if matches then index <- i
@@ -658,7 +658,7 @@ module String =
                 let mutable j = 0
                 
                 while j < value.Length && matches do
-                    if s.[i + j] <> value.[j] then matches <- false
+                    if s[i + j] <> value[j] then matches <- false
                     j <- increment j
                     
                 if matches then index <- i
@@ -682,7 +682,7 @@ module String =
                 let mutable j = 0
                 
                 while j < anyOf.Length && not found do
-                    if s.[i] = anyOf.[j] then found <- true
+                    if s[i] = anyOf[j] then found <- true
                     j <- increment j
                     
                 if found then index <- i
@@ -698,7 +698,7 @@ module String =
         else
             let result = Array.zeroCreate s.Length
             for i = 0 to s.Length - 1 do
-                result.[i] <- s.[i]
+                result[i] <- s[i]
             result
     
     /// <summary>Checks if a string is equal to another string, ignoring case</summary>
@@ -712,7 +712,7 @@ module String =
         else
             let mutable equal = true
             for i = 0 to s.Length - 1 do
-                if charToLower s.[i] <> charToLower value.[i] then
+                if charToLower s[i] <> charToLower value[i] then
                     equal <- false
             equal
     
@@ -723,12 +723,12 @@ module String =
         if isNull s || s.Length = 0 then false
         else
             let mutable valid = true
-            let mutable i = if s.[0] = '-' || s.[0] = '+' then 1 else 0
+            let mutable i = if s[0] = '-' || s[0] = '+' then 1 else 0
             
             if i = s.Length then false
             else
                 while i < s.Length && valid do
-                    match parseDigit s.[i] with
+                    match parseDigit s[i] with
                     | Some _ -> i <- increment i
                     | None -> valid <- false
                         

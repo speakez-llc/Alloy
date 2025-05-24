@@ -1,7 +1,6 @@
 namespace Alloy
 
 open Alloy
-open FSharp.UMX
 
 /// <summary>
 /// Units of measure for BAREWire types
@@ -240,4 +239,4 @@ module Size =
     /// <returns>Size in bytes</returns>
     let inline fromDimensions (width: int) (height: int) (channels: int): int<bytes> =
         let totalSize = width * height * channels
-        Alloy.Numerics.intWithUnit<bytes> totalSize
+        intWithUnit<bytes> totalSize

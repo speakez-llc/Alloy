@@ -142,8 +142,8 @@ module Binary =
     /// <returns>The int16 value</returns>
     let toInt16 (bytes: byte[]) (startIndex: int) : int16 =
         if startIndex + 1 >= bytes.Length then failwith "Array too small"
-        let b0 = int16 bytes.[startIndex]
-        let b1 = int16 bytes.[startIndex + 1]
+        let b0 = int16 bytes[startIndex]
+        let b1 = int16 bytes[startIndex + 1]
         
         b0 ||| (b1 <<< 8)
     
@@ -155,8 +155,8 @@ module Binary =
     /// <returns>The uint16 value</returns>
     let toUInt16 (bytes: byte[]) (startIndex: int) : uint16 =
         if startIndex + 1 >= bytes.Length then failwith "Array too small"
-        let b0 = uint16 bytes.[startIndex]
-        let b1 = uint16 bytes.[startIndex + 1]
+        let b0 = uint16 bytes[startIndex]
+        let b1 = uint16 bytes[startIndex + 1]
         
         b0 ||| (b1 <<< 8)
     
@@ -168,10 +168,10 @@ module Binary =
     /// <returns>The int32 value</returns>
     let toInt32 (bytes: byte[]) (startIndex: int) : int32 =
         if startIndex + 3 >= bytes.Length then failwith "Array too small"
-        let b0 = int32 bytes.[startIndex]
-        let b1 = int32 bytes.[startIndex + 1]
-        let b2 = int32 bytes.[startIndex + 2]
-        let b3 = int32 bytes.[startIndex + 3]
+        let b0 = int32 bytes[startIndex]
+        let b1 = int32 bytes[startIndex + 1]
+        let b2 = int32 bytes[startIndex + 2]
+        let b3 = int32 bytes[startIndex + 3]
         
         b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24)
     
@@ -183,10 +183,10 @@ module Binary =
     /// <returns>The uint32 value</returns>
     let toUInt32 (bytes: byte[]) (startIndex: int) : uint32 =
         if startIndex + 3 >= bytes.Length then failwith "Array too small"
-        let b0 = uint32 bytes.[startIndex]
-        let b1 = uint32 bytes.[startIndex + 1]
-        let b2 = uint32 bytes.[startIndex + 2]
-        let b3 = uint32 bytes.[startIndex + 3]
+        let b0 = uint32 bytes[startIndex]
+        let b1 = uint32 bytes[startIndex + 1]
+        let b2 = uint32 bytes[startIndex + 2]
+        let b3 = uint32 bytes[startIndex + 3]
         
         b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24)
     
@@ -198,14 +198,14 @@ module Binary =
     /// <returns>The int64 value</returns>
     let toInt64 (bytes: byte[]) (startIndex: int) : int64 =
         if startIndex + 7 >= bytes.Length then failwith "Array too small"
-        let b0 = int64 bytes.[startIndex]
-        let b1 = int64 bytes.[startIndex + 1]
-        let b2 = int64 bytes.[startIndex + 2]
-        let b3 = int64 bytes.[startIndex + 3]
-        let b4 = int64 bytes.[startIndex + 4]
-        let b5 = int64 bytes.[startIndex + 5]
-        let b6 = int64 bytes.[startIndex + 6]
-        let b7 = int64 bytes.[startIndex + 7]
+        let b0 = int64 bytes[startIndex]
+        let b1 = int64 bytes[startIndex + 1]
+        let b2 = int64 bytes[startIndex + 2]
+        let b3 = int64 bytes[startIndex + 3]
+        let b4 = int64 bytes[startIndex + 4]
+        let b5 = int64 bytes[startIndex + 5]
+        let b6 = int64 bytes[startIndex + 6]
+        let b7 = int64 bytes[startIndex + 7]
         
         b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24) |||
         (b4 <<< 32) ||| (b5 <<< 40) ||| (b6 <<< 48) ||| (b7 <<< 56)
@@ -218,14 +218,14 @@ module Binary =
     /// <returns>The uint64 value</returns>
     let toUInt64 (bytes: byte[]) (startIndex: int) : uint64 =
         if startIndex + 7 >= bytes.Length then failwith "Array too small"
-        let b0 = uint64 bytes.[startIndex]
-        let b1 = uint64 bytes.[startIndex + 1]
-        let b2 = uint64 bytes.[startIndex + 2]
-        let b3 = uint64 bytes.[startIndex + 3]
-        let b4 = uint64 bytes.[startIndex + 4]
-        let b5 = uint64 bytes.[startIndex + 5]
-        let b6 = uint64 bytes.[startIndex + 6]
-        let b7 = uint64 bytes.[startIndex + 7]
+        let b0 = uint64 bytes[startIndex]
+        let b1 = uint64 bytes[startIndex + 1]
+        let b2 = uint64 bytes[startIndex + 2]
+        let b3 = uint64 bytes[startIndex + 3]
+        let b4 = uint64 bytes[startIndex + 4]
+        let b5 = uint64 bytes[startIndex + 5]
+        let b6 = uint64 bytes[startIndex + 6]
+        let b7 = uint64 bytes[startIndex + 7]
         
         b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24) |||
         (b4 <<< 32) ||| (b5 <<< 40) ||| (b6 <<< 48) ||| (b7 <<< 56)
@@ -238,8 +238,8 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeInt16 (value: int16) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 1 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFFs)
-        buffer.[startIndex + 1] <- byte (value >>> 8)
+        buffer[startIndex] <- byte (value &&& 0xFFs)
+        buffer[startIndex + 1] <- byte (value >>> 8)
     
     /// <summary>
     /// Write a UInt16 value to a buffer
@@ -249,8 +249,8 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeUInt16 (value: uint16) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 1 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFFus)
-        buffer.[startIndex + 1] <- byte (value >>> 8)
+        buffer[startIndex] <- byte (value &&& 0xFFus)
+        buffer[startIndex + 1] <- byte (value >>> 8)
     
     /// <summary>
     /// Write an Int32 value to a buffer
@@ -260,10 +260,10 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeInt32 (value: int32) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 3 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFF)
-        buffer.[startIndex + 1] <- byte ((value >>> 8) &&& 0xFF)
-        buffer.[startIndex + 2] <- byte ((value >>> 16) &&& 0xFF)
-        buffer.[startIndex + 3] <- byte ((value >>> 24) &&& 0xFF)
+        buffer[startIndex] <- byte (value &&& 0xFF)
+        buffer[startIndex + 1] <- byte ((value >>> 8) &&& 0xFF)
+        buffer[startIndex + 2] <- byte ((value >>> 16) &&& 0xFF)
+        buffer[startIndex + 3] <- byte ((value >>> 24) &&& 0xFF)
     
     /// <summary>
     /// Write a UInt32 value to a buffer
@@ -273,10 +273,10 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeUInt32 (value: uint32) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 3 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFFu)
-        buffer.[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFu)
-        buffer.[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFu)
-        buffer.[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFu)
+        buffer[startIndex] <- byte (value &&& 0xFFu)
+        buffer[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFu)
+        buffer[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFu)
+        buffer[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFu)
     
     /// <summary>
     /// Write an Int64 value to a buffer
@@ -286,14 +286,14 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeInt64 (value: int64) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 7 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFFL)
-        buffer.[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFL)
-        buffer.[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFL)
-        buffer.[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFL)
-        buffer.[startIndex + 4] <- byte ((value >>> 32) &&& 0xFFL)
-        buffer.[startIndex + 5] <- byte ((value >>> 40) &&& 0xFFL)
-        buffer.[startIndex + 6] <- byte ((value >>> 48) &&& 0xFFL)
-        buffer.[startIndex + 7] <- byte ((value >>> 56) &&& 0xFFL)
+        buffer[startIndex] <- byte (value &&& 0xFFL)
+        buffer[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFL)
+        buffer[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFL)
+        buffer[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFL)
+        buffer[startIndex + 4] <- byte ((value >>> 32) &&& 0xFFL)
+        buffer[startIndex + 5] <- byte ((value >>> 40) &&& 0xFFL)
+        buffer[startIndex + 6] <- byte ((value >>> 48) &&& 0xFFL)
+        buffer[startIndex + 7] <- byte ((value >>> 56) &&& 0xFFL)
     
     /// <summary>
     /// Write a UInt64 value to a buffer
@@ -303,11 +303,11 @@ module Binary =
     /// <param name="startIndex">The starting index</param>
     let writeUInt64 (value: uint64) (buffer: byte[]) (startIndex: int) : unit =
         if startIndex + 7 >= buffer.Length then failwith "Buffer too small"
-        buffer.[startIndex] <- byte (value &&& 0xFFUL)
-        buffer.[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFUL)
-        buffer.[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFUL)
-        buffer.[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFUL)
-        buffer.[startIndex + 4] <- byte ((value >>> 32) &&& 0xFFUL)
-        buffer.[startIndex + 5] <- byte ((value >>> 40) &&& 0xFFUL)
-        buffer.[startIndex + 6] <- byte ((value >>> 48) &&& 0xFFUL)
-        buffer.[startIndex + 7] <- byte ((value >>> 56) &&& 0xFFUL)
+        buffer[startIndex] <- byte (value &&& 0xFFUL)
+        buffer[startIndex + 1] <- byte ((value >>> 8) &&& 0xFFUL)
+        buffer[startIndex + 2] <- byte ((value >>> 16) &&& 0xFFUL)
+        buffer[startIndex + 3] <- byte ((value >>> 24) &&& 0xFFUL)
+        buffer[startIndex + 4] <- byte ((value >>> 32) &&& 0xFFUL)
+        buffer[startIndex + 5] <- byte ((value >>> 40) &&& 0xFFUL)
+        buffer[startIndex + 6] <- byte ((value >>> 48) &&& 0xFFUL)
+        buffer[startIndex + 7] <- byte ((value >>> 56) &&& 0xFFUL)

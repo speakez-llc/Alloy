@@ -177,7 +177,7 @@ module Core =
         let mutable count = 0
         // First pass: count matching elements
         for i = 0 to source.Length - 1 do
-            if predicate source.[i] then
+            if predicate source[i] then
                 count <- count + 1
         
         // Allocate result array of exact size
@@ -186,8 +186,8 @@ module Core =
         // Second pass: fill result array
         let mutable j = 0
         for i = 0 to source.Length - 1 do
-            if predicate source.[i] then
-                result.[j] <- source.[i]
+            if predicate source[i] then
+                result[j] <- source[i]
                 j <- j + 1
         
         result
@@ -205,7 +205,7 @@ module Core =
         // First determine exact result size
         let mutable count = 0
         for i = 0 to source.Length - 1 do
-            match chooser source.[i] with
+            match chooser source[i] with
             | Some _ -> count <- count + 1
             | None -> ()
         
@@ -215,9 +215,9 @@ module Core =
         // Fill result array
         let mutable j = 0
         for i = 0 to source.Length - 1 do
-            match chooser source.[i] with
+            match chooser source[i] with
             | Some value -> 
-                result.[j] <- value
+                result[j] <- value
                 j <- j + 1
             | None -> ()
         
