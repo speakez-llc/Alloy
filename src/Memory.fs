@@ -2,6 +2,7 @@ namespace Alloy
 
 open FSharp.NativeInterop
 open Alloy.Memory.Platform
+open Alloy.Numerics
 
 /// <summary>
 /// Advanced memory types and operations

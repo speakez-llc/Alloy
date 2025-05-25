@@ -251,9 +251,9 @@ let v2 = { X = 1.0; Y = 2.0 }
 let v3 = add v1 v2  // { X = 4.0; Y = 6.0 }
 ```
 
-## API Reference
+## API Reference TBD
 
-See the [full API documentation](https://github.com/your-repo/alloy/wiki/API) for detailed information on all modules:
+
 
 - **Core**: Extended operations from fsil
 - **Numerics**: Arithmetic and mathematical operations
